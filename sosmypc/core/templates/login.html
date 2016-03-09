@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <section>
+        <form method="post" action=".">
+            {% csrf_token %}
+                  <div>
+                  <!-- Esse form.username.label_tag funciona para pegar o nome do campo ou seja, vai aparecer USUÁRIO-->
+                  <!-- Esse form.username pega o nome do usuário do admin-->
+                      <label>{{ form.username.label_tag }}</label>
+                          {{ form.username }}
+
+                  </div>
+              <br />
+                  <div>
+                  <!-- Esse form.password.label_tag funciona para pegar o nome do campo ou seja, vai aparecer SENHA -->
+                      <label>{{ form.password.label_tag }}</label>
+                          {{ form.password}}
+                  </div>
+              <br />
+              <div>
+                  <button type="submit">Entrar</button>
+              </div>
+        </form>
+    </section>
+</body>
+</html>
+
+

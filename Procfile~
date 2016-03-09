@@ -1,0 +1,1 @@
+web: gunicorn servicehunter.wsgi --log-file -
