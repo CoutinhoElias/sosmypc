@@ -18,6 +18,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from sosmypc.core import views
 from sosmypc.core.views import geoCoordenada, pessoa_list, pessoa_detail
 
 urlpatterns = [
@@ -25,6 +26,7 @@ urlpatterns = [
     url(r'^registrotecnico/$', geoCoordenada, name='registrotecnico'),
     url(r'^admin/', admin.site.urls),
     url(r'^pessoas/$', pessoa_list),
+    url(r'^pessoas/rest$', views.rest),
     url(r'^pessoas/(?P<pk>[0-9]+)/$', pessoa_detail),
 ]
 

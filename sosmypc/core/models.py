@@ -83,7 +83,7 @@ class Qualificacao(models.Model):
 #------------------------------------------------------------------------------------------------------------------------------------------
 
 class QualificacaoProfissoesPessoa(models.Model):# MANY_TO_MANY MANUAL
-    profissaopessoa = models.ForeignKey(ProfissoesPessoa, related_name='qualificacaoProfissaoPessoa')
+    profissaopessoa = models.ForeignKey(ProfissoesPessoa, related_name='qualificacaoProfissoesPessoa')
     qualificacao = models.ForeignKey(Qualificacao)
 
 

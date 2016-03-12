@@ -11,7 +11,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
-from sosmypc.core.models import Pessoa
+from sosmypc.core.models import Pessoa, ProfissoesPessoa, QualificacaoProfissoesPessoa
 from sosmypc.core.serializers import PessoaSerializer
 
 # Create your views here.
@@ -19,6 +19,32 @@ from sosmypc.core.serializers import PessoaSerializer
 
 from sosmypc.core.models import Pessoa#, Qualificacao, Tecnico
 
+def rest(request):
+    pessoas = Pessoa.objects.all()
+
+    jsondata = '['
+    for pessoa in pessoas:
+        jsondata += '\n{"nome":"'+pessoa.nomepessoa+'",' \
+                    '\n  "endereco":"'+pessoa.tipologradouro+' '+pessoa.logradouro+', '+str(pessoa.numero)+'' \
+                    '-'+pessoa.bairro+' '+pessoa.cidade+' - '+pessoa.estado+'",'
+        jsondata += '\n  "coordenadas":"'+str(pessoa.latitude)+','+str(pessoa.longitude)+'",'
+        jsondata += '\n  "profissoes":['
+        profissoes = ProfissoesPessoa.objects.filter(pessoa=pessoa)
+        if profissoes.count()==0:
+            jsondata+='['
+        for profissao in profissoes:
+            jsondata+='\n  {"profissao":"'+profissao.profissao.profissao+'","rating":0,'
+            jsondata+='\n   "qualificacoes":['
+            qualificacoes = QualificacaoProfissoesPessoa.objects.filter(profissaopessoa=profissao)
+            if qualificacoes.count() == 0:
+                jsondata+='['
+            for qualificacao in qualificacoes:
+                jsondata+='"'+qualificacao.qualificacao.descricao+'",'
+            jsondata=jsondata[:-1]+']},'
+        jsondata =jsondata[:-1]+ ']},'
+
+    jsondata = jsondata[:-1]+'\n]'
+    return HttpResponse(jsondata,content_type='application/json')
 
 def home(request):
     return render(request,'index.html')

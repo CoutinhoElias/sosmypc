@@ -1,53 +1,46 @@
 from rest_framework import serializers
 from sosmypc.core.models import *
 
-class ProfissaoSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Profissao
-        fields = ('id','profissao')
 
 
-class QualificacoesSerializer(serializers.ModelSerializer):
+"""class QualificacoesSerializer(serializers.ModelSerializer): #QualificacaoSerializer
+
+    #qualificacoes = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Qualificacao
         fields = ('id','descricao')
+"""
 
 #------------------------------------------------------------------------------------------------------------------------------------------
-class QualificacoesProfissoesPessoaSerializer(serializers.ModelSerializer):
-    qualificacao = QualificacoesSerializer()
+class QualificacoesProfissoesPessoaSerializer(serializers.ModelSerializer): #QualificacaoSerializer
 
     #qualificacoesProfissoesPessoa = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = QualificacaoProfissoesPessoa
-        #fields = ('id','profissaopessoa','qualificacao')
-        fields = ('profissaopessoa','qualificacao')
+        fields = ('id','profissaopessoa')
 
 
 #------------------------------------------------------------------------------------------------------------------------------------------
-class ProfissoesPessoaSerializer(serializers.ModelSerializer):
-                #qualificacaoProfissaoPessoa = QualificacoesProfissoesPessoaSerializer(many=True)
-                #profissao = ProfissaoSerializer()
-    qualificacaoProfissaoPessoa = QualificacoesProfissoesPessoaSerializer(many=True)
-    profissao = ProfissaoSerializer()
+class ProfissoesPessoaSerializer(serializers.ModelSerializer): #ProfissaoSerializer
+    #qualificacaoProfissaoPessoa = QualificacoesProfissoesPessoaSerializer(many=True)
+    qualificacaoProfissaoPessoa = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = ProfissoesPessoa
-        #fields = ('id', 'profissao', 'rating','qualificacaoProfissaoPessoa')
-        fields = ('profissao', 'rating','qualificacaoProfissaoPessoa')
+        fields = ('id', 'profissao', 'rating','qualificacaoProfissaoPessoa')
 
 #------------------------------------------------------------------------------------------------------------------------------------------
 
-
 class PessoaSerializer(serializers.ModelSerializer):
-    #profissoesPessoa = ProfissoesPessoaSerializer(many=True)
-    profissoesPessoa = ProfissoesPessoaSerializer(many=True)
+    #profissaoPessoa = ProfissoesPessoaSerializer(many=True)
+    profissaoPessoa = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Pessoa
-        fields = ('id', 'nomepessoa', 'tipologradouro', 'logradouro', 'numero', 'bairro', 'cidade', 'estado', 'longitude', 'latitude','profissoesPessoa')
+        fields = ('id', 'nomepessoa', 'tipologradouro', 'logradouro', 'numero', 'bairro', 'cidade', 'estado', 'longitude', 'latitude','profissaoPessoa')
+
 
     def create(self, validated_data):
         """
@@ -72,4 +65,3 @@ class PessoaSerializer(serializers.ModelSerializer):
 
         #instance.save()
         #return instance
-
