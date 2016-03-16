@@ -1,0 +1,20 @@
+                    {% form %}
+                    <div class="row">
+                        <div class="input-field col s12 required" id="id_name_container">
+                            {% part form.username prefix %}<i class="mdi-action-account-box prefix"></i>{% endpart %}
+                            <!--
+                            <i class="mdi-action-account-box prefix"></i>
+                            <label for="id_username">Nome:</label>
+                            {{ form.username.erros }}
+                            {{ form.username }}
+                            -->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12 required" id="id_password_container">
+                            {% part form.password prefix %}<i class="mdi-action-lock-open prefix"></i>{% endpart %}
+                            <!--
+                            <i class="mdi-action-lock prefix"></i>
+                            <label for="id_password">Senha:</label>
+                            {{ form.password.erros }}
+                            {{ form.password }}

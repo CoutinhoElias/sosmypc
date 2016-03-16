@@ -1,121 +1,150 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt">
-<html>
-	<head>
+{% include 'material/includes/material_css.html' %}
+<!-- Latest compiled and minified CSS -->
+<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
 
+{% include 'material/includes/material_js.html' %}
+
+{% load material_form %}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Faça já seu registro!</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
-
-    <!-- Custom Fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" type="text/css">
-
-    <!-- Plugin CSS -->
-    <link rel="stylesheet" href="{% static 'css/animate.min.css' %}" type="text/css">
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/creative.css' %}" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <title>Material Design for Django Forms and Admin</title>
 
 
-	</head>
 
-	<body>
-
-    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand page-scroll" href="#page-top">Start Bootstrap</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a class="page-scroll" href="#about">About</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#services">Services</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#portfolio">Portfolio</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#contact">Contact</a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container-fluid -->
-    </nav>
+<link href="/static/material/css/materialize.css" rel="stylesheet">
+<link href="/static/material/css/jquery.datetimepicker.css " rel="stylesheet">
+<link href="/static/material/css/forms.css " rel="stylesheet">
 
 
-    <header>
-        <div class="header-content">
-            <div class="header-content-inner">
-                <h1>Your Favorite Source of Free Bootstrap Themes</h1>
-                <hr>
-                <p>Start Bootstrap can help you build better websites using the Bootstrap CSS framework! Just download your template and start going, no strings attached!</p>
-                <a href="#about" class="btn btn-primary btn-xl page-scroll">Find Out More</a>
-            </div>
-        </div>
-    </header>
+    <style type="text/css">
+      html, body {
+          background: #eee;
+          height: 100%;
+      }
+    </style>
+
+<style type="text/css">
+
+</style>
 
 
-        <!-- OVERVIEW -->
-        <section>
-        	<div class="content row padding-bottom-3 desktop-12 container">
-                <h1>Formulário de Inscrição</h1>
-                <div class="desktop-6">
-                    <form action="." method="post">
-                        {% csrf_token %}
-                        <div class="form-row label-block input-text">
-                            {{ form.as_p }}
-                        </div>
-                        <p class="btn-row"><input type="submit" value="Enviar!"/></p>
-                    </form>
+  </head>
+  <body class="valign-wrapper2">
+
+      <div class="container expand-on-small-only">
+
+<div class="row valign change-form">
+    <div class="col s12 m8 offset-m2 l8 offset-l2">
+        <div class="card">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="card-content">
+                    <span class="card-title grey-text text-darken-2">Registrar-se</span>
+                    <input type='hidden' name='csrfmiddlewaretoken' value='AD96j5OnsBPsnwXs48m137bgsIyIZvML' />
+                        <form method="POST">
+                            {% csrf_token %}
+                            {% form form=form %}
+
+                                <div class="row">
+                                    <div class="input-field col s12 required" id="id_name_container">
+                                        {% part form.username prefix %}<i class="mdi-action-account-box prefix"></i>{% endpart %}
+                                        <!--
+                                        <i class="mdi-action-account-box prefix"></i>
+                                        <label for="id_username">Nome:</label>
+                                        {{ form.username.erros }}
+                                        {{ form.username }}
+                                        -->
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="input-field col s12 required" id="id_name_container">
+                                        {% part form.first_name prefix %}<i class="mdi-action-account-box prefix"></i>{% endpart %}
+                                        <!--
+                                        <i class="mdi-action-account-box prefix"></i>
+                                        <label for="id_username">Nome:</label>
+                                        {{ form.first_name.erros }}
+                                        {{ form.first_name }}
+                                        -->
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="input-field col s12 required" id="id_name_container">
+                                        {% part form.last_name prefix %}<i class="mdi-action-account-box prefix"></i>{% endpart %}
+                                        <!--
+                                        <i class="mdi-action-account-box prefix"></i>
+                                        <label for="id_username">Nome:</label>
+                                        {{ form.last_name.erros }}
+                                        {{ form.last_name }}
+                                        -->
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="input-field col s12 required" id="id_name_container">
+                                        {% part form.email prefix %}<i class="mdi-communication-email prefix"></i>{% endpart %}
+                                        <!--
+                                        <i class="mdi-action-account-box prefix"></i>
+                                        <label for="id_username">Nome:</label>
+                                        {{ form.email.erros }}
+                                        {{ form.email }}
+                                        -->
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="input-field col s12 required" id="id_name_container">
+                                        {% part form.password1 prefix %}<i class="mdi-action-lock-open prefix"></i>{% endpart %}
+                                        <!--
+                                        <i class="mdi-action-account-box prefix"></i>
+                                        <label for="id_username">Nome:</label>
+                                        {{ form.password1.erros }}
+                                        {{ form.password1 }}
+                                        -->
+                                    </div>
+                                </div>
+
+                            {% endform %}
+
+                            <div class="card-action">
+                                <div class="right-align">
+                                    <button class="waves-effect waves-light btn" type="submit">Cadastrar</button>
+                                </div>
+                            </div>
+                        </form>
                 </div>
-            </div>
-        </section>
 
-        <!-- jQuery -->
-    <script src="{% static 'js/jquery.js' %}"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-
-    <!-- Plugin JavaScript -->
-    <script src="{% static 'js/jquery.easing.min.js' %}"></script>
-    <script src="{% static 'js/jquery.fittext.js' %}"></script>
-    <script src="{% static 'js/wow.min.js' %}"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="{% static 'js/creative.js' %}"></script>
+            </form>
+        </div>
+    </div>
+</div>
 
 
-    </body>
+
+      </div>
+
+      <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+
+<script src="/static/material/js/jquery.datetimepicker.js"></script>
+<script src="/static/material/js/jquery.formset.js"></script>
+<script src="/static/material/js/materialize.js"></script>
+<script src="/static/material/js/material_init.js"></script>
+<script type="text/javascript">
+if (navigator.appVersion.indexOf('Win') != -1) {
+    document.write('<link rel="stylesheet" type="text/css" href="/static/material/css/robotofix.css">');
+}
+</script>
+
+
+  </body>
 </html>

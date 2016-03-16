@@ -20,8 +20,11 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from sosmypc.core import views
 from sosmypc.core.views import geoCoordenada, pessoa_list, pessoa_detail
+from material.frontend import urls as frontend_urls
+
 
 urlpatterns = [
+    url(r'', include(frontend_urls)),
     url(r'^$', 'sosmypc.core.views.home'),
     url(r'^registrotecnico/$', geoCoordenada, name='registrotecnico'),
     url(r'^admin/', admin.site.urls),
@@ -29,15 +32,4 @@ urlpatterns = [
     url(r'^pessoas/rest$', views.rest),
     url(r'^pessoas/(?P<pk>[0-9]+)/$', pessoa_detail),
 ]
-
 # -----------------------------------------------------------
-from rest_framework import routers
-from sosmypc.core.views import PessoaViewSet
-
-router = routers.DefaultRouter()
-router.register(r'pessoas', PessoaViewSet)
-
-urlpatterns = urlpatterns + [
-    url(r'^api/v1/', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-]
