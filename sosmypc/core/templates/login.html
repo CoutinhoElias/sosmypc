@@ -1,33 +1,77 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <section>
-        <form method="post" action=".">
-            {% csrf_token %}
-                  <div>
-                  <!-- Esse form.username.label_tag funciona para pegar o nome do campo ou seja, vai aparecer USUÁRIO-->
-                  <!-- Esse form.username pega o nome do usuário do admin-->
-                      <label>{{ form.username.label_tag }}</label>
-                          {{ form.username }}
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Design for Django Forms and Admin</title>
 
-                  </div>
-              <br />
-                  <div>
-                  <!-- Esse form.password.label_tag funciona para pegar o nome do campo ou seja, vai aparecer SENHA -->
-                      <label>{{ form.password.label_tag }}</label>
-                          {{ form.password}}
-                  </div>
-              <br />
-              <div>
-                  <button type="submit">Entrar</button>
-              </div>
-        </form>
-    </section>
+<link href="/static/material/css/materialize.css" rel="stylesheet">
+<link href="/static/material/css/jquery.datetimepicker.css " rel="stylesheet">
+<link href="/static/material/css/forms.css " rel="stylesheet">
+
+
+<style type="text/css">
+html, body {
+background: #eee;
+height: 100%;
+}
+</style>
+
+</head>
+<body class="valign-wrapper2">
+
+<div class="container expand-on-small-only">
+    <div class="row valign change-form">
+        <div class="col s12 m8 offset-m2 l8 offset-l2">
+            <div class="card">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="card-content">
+                <span class="card-title grey-text text-darken-2">Login form</span>
+                <input type='hidden' name='csrfmiddlewaretoken' value='Lvhx23s1IcCWRfqd7DnQ0qPlrwd0PM72' />
+                    <div class="row">
+                        <div id="id_email_container" class="input-field col s12 required">
+                            <i class="mdi-communication-email prefix"></i><input type="email" name="email" id="id_email"><label for="id_email">Email</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="id_password_container" class="input-field col s12 required">
+                            <i class="mdi-action-lock prefix"></i><input type="password" name="password" id="id_password"><label for="id_password">Password</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div id="id_keep_logged_container" class="checkbox-field col s12 right-align">
+                            <input type="checkbox" name="keep_logged" id="id_keep_logged"><label for="id_keep_logged" class="">Keep me logged in</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-action">
+                    <div class="right-align">
+                        <button class="waves-effect waves-teal btn-flat">Register</button>
+                        <button class="waves-effect waves-light btn" type="submit">Login</button>
+                    </div>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="/static/material/js/jquery.datetimepicker.js"></script>
+<script src="/static/material/js/jquery.formset.js"></script>
+<script src="/static/material/js/materialize.js"></script>
+<script src="/static/material/js/material_init.js"></script>
+<script type="text/javascript">
+if (navigator.appVersion.indexOf('Win') != -1) {
+document.write('<link rel="stylesheet" type="text/css" href="/static/material/css/robotofix.css">');
+}
+</script>
+
+
 </body>
 </html>
-
 
