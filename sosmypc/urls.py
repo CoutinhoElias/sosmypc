@@ -22,18 +22,19 @@ from django.conf import settings
 from sosmypc.core import views, urls
 from sosmypc.core.views import geoCoordenada, pessoa_list, pessoa_detail
 #from material.frontend import urls as frontend_urls
+from django.contrib.auth.decorators import login_required
 
 
 urlpatterns = [
     #url(r'', include(frontend_urls)),
     url(r'^admin/', admin.site.urls),
-    url(r'^pessoas/$', pessoa_list),
+    url(r'^pessoas/$', login_required(pessoa_list)),
     url(r'^pessoas/rest$', views.rest),
     url(r'^pessoas/(?P<pk>[0-9]+)/$', pessoa_detail),
 
-    url(r'^$',views.index_html,name='sosmypc'),
-    url(r'^site/', include('sosmypc.core.urls')),
-    url(r'^listaprofissoes/$',views.lista),
+    url(r'^$', login_required(views.index_html), name='sosmypc'),
+    url(r'^site/', login_required(include('sosmypc.core.urls'))),
+    url(r'^listaprofissoes/$', login_required(views.lista)),
 
 
 ]
