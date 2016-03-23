@@ -33,10 +33,10 @@ class QualificacoesModelAdmin(admin.ModelAdmin):
 
 class QualificacoesProfissoesPessoaModelAdmin(admin.ModelAdmin):
     list_select_related = True
-    list_display = ('pessoa__nome','qualificacao','profissaopessoa')
+    list_display = ('pessoa__nome','qualificacao','profissao')
 
     def pessoa__nome(self, obj):
-        return obj.profissaopessoa.pessoa.nomepessoa.upper()
+        return obj.profissao.pessoa.nomepessoa.upper()
     pessoa__nome.short_description = u'NOME'
 
 

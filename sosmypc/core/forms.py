@@ -1,12 +1,58 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from material import Layout, Row, Fieldset, Span3, Span2, Span10, Span8, Span7
+from material import Layout, Row, Fieldset, Span3, Span2, Span10, Span8, Span7, Span5
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=30,label="Nome")
+    email = forms.EmailField(label="E-mail")
+    password = forms.CharField(widget=forms.PasswordInput,label="Senha")
+
+class RegistrationForm(forms.Form, UserCreationForm):
+    username = forms.CharField(max_length=30,required=True,label='Login')
+    email = forms.EmailField(label="E-mail",required=True)
+    #senha = forms.CharField(widget=forms.PasswordInput,label='Senha')
+    #confirma_senha = forms.CharField(widget=forms.PasswordInput, label="Confirmar senha")
+
+    nome = forms.CharField(required=True,label='Nome Completo')
+    cep  = forms.IntegerField(max_value=99999999,required=True,label='CEP')
+    #tipo_logradouro = forms.CharField(required=True,label='Tipo')
+    logradouro = forms.CharField(required=True,label='Logradouro')
+    numero = forms.CharField(required=True,label='Número')
+    bairro = forms.CharField(required=True,label='Bairro')
+    cidade = forms.CharField(required=True,label='Cidade')
+    estado = forms.CharField(required=True,label='UF')
+
+    #last_name = forms.CharField(required=True, label='Último nome')
+    #gender = forms.ChoiceField(choices=((None, ''), ('F', 'Feminino'), ('M', 'Masculino'), ('O', 'Outro')),label='Gênero',required=False)
+    profissional = forms.BooleanField(required=False, label='Sou profissional')
+    agree_toc = forms.BooleanField(required=True, label='Eu aceito os termos e condições de uso.')
+
+    layout = Layout(
+                 Fieldset('Cadastrar em SOS my PC',
+                    'username','email',
+                    Row('password1', 'password2')),
+                 Fieldset('Dados Pessoais','nome',
+                    Row(Span2('cep'),#Span2('tipo_logradouro'),
+                    Span8('logradouro'),Span2('numero')),
+                    Row(Span5('bairro'),Span5('cidade'),Span2('estado'))  ),
+                             'profissional', 'agree_toc')
+
+
+class CommentForm(forms.Form):
+    nome = forms.CharField(required=True,label='Nome Completo')
+    email=forms.EmailField(label="E-mail",required=True)
+    mensagem=forms.CharField(required=True,label='Comentário',widget=forms.Textarea)
 
 
 class UserForm(forms.Form):
     username = forms.CharField(label="Nome usuário", max_length=32, widget=forms.TextInput(
         attrs={'class': 'form-control input-lg'}))
+
+    email = forms.EmailField(max_length=32, widget=forms.EmailInput(
+        attrs={'class': 'form-control input-lg'}))
+
     #password = forms.CharField(label="Senha", max_length=32, widget=forms.PasswordInput(
         #attrs={'class': 'form-control input-lg'}))
     first_name = forms.CharField(label="Primeiro nome", max_length=32, widget=forms.TextInput(
@@ -15,45 +61,10 @@ class UserForm(forms.Form):
         attrs={'class': 'form-control input-lg'}))
     is_staff = forms.BooleanField(label="É usuário do sistema?", initial=False)
     is_superuser = forms.BooleanField(label="É Administrador do sistema?", initial=False)
-    email = forms.EmailField(max_length=32, widget=forms.EmailInput(
-        attrs={'class': 'form-control input-lg'}))
 
+class ProfissaoForm(forms.Form):
+    profissao = forms.CharField(max_length=30,label="Profissao")
 
-
-class TecnicoForm(forms.Form, UserCreationForm):
-    username = forms.CharField(label='Login',max_length=30)
-
-    first_name = forms.CharField(label="Primeiro nome", max_length=32, widget=forms.TextInput(
-        attrs={'class': 'form-control input-lg'}))
-
-    last_name = forms.CharField(label="Restante do nome", max_length=32, widget=forms.TextInput(
-        attrs={'class': 'form-control input-lg'}))
-
-    email = forms.EmailField(max_length=32, widget=forms.EmailInput(
-        attrs={'class': 'form-control input-lg'}))
-
-    tipologradouro = forms.CharField(label="Tipo Logradouro", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-
-    logradouro = forms.CharField(label="Logradouro", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-
-    numero = forms.CharField(label="Número", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-
-    bairro = forms.CharField(label="Bairro", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-
-    cidade = forms.CharField(label="Cidade", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-
-    estado = forms.CharField(label="Estado", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-    layout = Layout('username','first_name', 'last_name','email',
-                Row('password1', 'password2'),
-                    Fieldset("Endereço",
-                         Row(Span3('tipologradouro'), Span7('logradouro'), Span2('numero')),
-                             Row('bairro', 'cidade','estado')))
 
 
 

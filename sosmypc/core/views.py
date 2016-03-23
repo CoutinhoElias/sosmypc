@@ -1,18 +1,29 @@
 import requests
 from django.contrib.auth.models import User
-from django.shortcuts import render
-from rest_framework import viewsets
+from django.contrib.auth import authenticate
 
-from sosmypc.core.forms import TecnicoForm
+from sosmypc.core.forms import CommentForm, LoginForm, RegistrationForm
 
-from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
-from sosmypc.core.models import Pessoa, ProfissoesPessoa, QualificacaoProfissoesPessoa
+from rest_framework import viewsets
+from sosmypc.core.models import Pessoa, ProfissoesPessoa, QualificacaoProfissoesPessoa, Profissao
 from sosmypc.core.serializers import PessoaSerializer
+
+
+from django.shortcuts import render
+
+
+
+from django.http import HttpResponse, HttpResponseRedirect
+
+from django.contrib.auth.decorators import login_required
+
+import urllib, json
 
 # Create your views here.
 
@@ -46,76 +57,130 @@ def rest(request):
     jsondata = jsondata[:-1]+'\n]'
     return HttpResponse(jsondata,content_type='application/json')
 
-def home(request):
-    return render(request,'index.html')
+#-----------------------------------------------------------------------------------------------------
+def index_html(request):
+    form = CommentForm()
+    return render(request,'index.html',{'form':form})
 
 
-def geoCoordenada(request):
-    print(request.POST)
-    if request.method == 'POST':
-        form = TecnicoForm(request.POST)
+def login(request):
+    next = request.GET.get('next', '/home/')
+    if request.method == "POST":
         username = request.POST['username']
-        password = request.POST['password1']
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        email = request.POST['email']
-        tipologradouro = request.POST['tipologradouro']
-        logradouro = request.POST['logradouro']
-        bairro = request.POST['bairro']
-        cidade = request.POST['cidade']
-        numero = request.POST['numero']
-        estado = request.POST['estado']
-        # longitude = request.POST['longitude']
-        # latitude = request.POST['latitude']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
 
-        address = tipologradouro + ' ' + logradouro + ', ' + numero + ' - ' + bairro + ', ' + cidade + ' - ' + estado
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect(next)
+            else:
+                return HttpResponse("Inactive user.")
+        else:
+            return HttpResponseRedirect(settings.LOGIN_URL)
 
-        # address = "1600 Amphitheatre Parkway, Mountain View, CA"
-        api_key = "AIzaSyBWKWlI1WE9nvuld9AVcpTZQItHLTUmWxo"
-        api_response = requests.get(
-            'https://maps.googleapis.com/maps/api/geocode/json?address={0}&key={1}'.format(address, api_key))
-        api_response_dict = api_response.json()
+    return render(request, "sosmypc/login.html", {'redirect_to': next})
 
-        if api_response_dict['status'] == 'OK':
-            latitude = api_response_dict['results'][0]['geometry']['location']['lat']
-            longitude = api_response_dict['results'][0]['geometry']['location']['lng']
-            print('Latitude:', latitude)
-            print('Longitude:', longitude)
 
-            user = User.objects.create_user(username=username,
-                                            email=email,
-                                            password=password,
-                                            first_name=first_name,
-                                            last_name=last_name)
+def Logout(request):
+    logout(request)
+    return HttpResponseRedirect(settings.LOGIN_URL)
 
-            # cria uma pessoa
-            pessoa = Pessoa.objects.create(username_id=user.pk,
-                                          nomepessoa=user.get_full_name(),
-                                          tipologradouro=tipologradouro,
-                                          logradouro=logradouro,
-                                          numero=numero,
-                                          bairro=bairro,
-                                          cidade=cidade,
-                                          estado=estado,
-                                          longitude=longitude,
-                                          latitude=latitude)
+#-----------------------------------------------------------------------------------------------------
 
-            #Tecnico.objects.create(pessoa=pessoa, )  # insere o pk do pessoa.
+# def login_html(request):
+#     if request.method=='POST':
+#         form = LoginForm(request.POST)
+#         if form.is_valid():
+#             cd = form.cleaned_data
+#             user = authenticate(username=cd['username'],password=cd['password'])
+#             print ('Teste')
+#             if user is not None:
+#                 if user.is_active:
+#                     login(request,user)
+#                     return HttpResponse('Autenticação realizada com sucesso')
+#                 else:
+#                     return HttpResponse('Conta desabilitada')
+#             else:
+#                 return HttpResponse('Login ou senha inválidos')
+#     else:
+#         form = LoginForm()
+#     #return render(request,'sosmypc/login.html',{'form':form})
+#     return render(request,'sosmypc/login.html',{'form':form})
 
-            # )
 
-            return render(request, 'registro_tecnico.html',
+def lista(request):
+    profissoes = Profissao.objects.all()
+    return render(request,'sosmypc/professions_list.html',{'profissoes':profissoes})
+
+@login_required
+def register_html(request):
+    if request.method=='POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            # Tratar os dados vindos do formulario de cadastro aqui
+            cd = form.cleaned_data
+            nome = cd['nome']
+            splitname = nome.split()
+            first_name = splitname[0] #Primeiro nome
+            last_name = ' '.join(splitname[1:]) #Restante do nome
+
+            username = request.POST['username']
+            password = request.POST['password1']
+            email = request.POST['email']
+            cep = request.POST['cep']
+            numero = request.POST['numero']
+            logradouro = request.POST['logradouro']
+            bairro = request.POST['bairro']
+            cidade = request.POST['cidade']
+            estado = request.POST['estado']
+
+            address = logradouro+', '+str(numero)+' - '+bairro+', '+cidade+' - '+estado+', '+cep[:5]+'-'+cep[5:]
+            latitude,longitude=geoCoordenada(address)
+
+            if latitude!=None and longitude!=None:
+                user = User.objects.create_user(username=username, email=email,
+                                                password=password, first_name=first_name,
+                                                last_name=last_name)
+
+                # cria uma pessoa
+                pessoa = Pessoa.objects.create(username_id=user.pk,
+                                              nomepessoa=user.get_full_name(),
+                                              cep=cep,       logradouro=logradouro,
+                                              numero=numero, bairro=bairro,
+                                              cidade=cidade, estado=estado,
+                                              longitude=longitude,latitude=latitude)
+
+            return render(request, 'registration.html',
                           {
-                              'latitude': latitude,
-                              'longitude': longitude,
-                              'form': TecnicoForm(),
+                              'form': RegistrationForm(),
                           })
         else:
-            return render(request, 'registro_tecnico.html',
+            return render(request, 'registration.html',
                           {'form': form})
+
+
+
     else:
-        return render(request, 'registro_tecnico.html',
-                      {'form': TecnicoForm()})
+        form = RegistrationForm()
+    #return render(request,'sosmypc/login.html',{'form':form})
+    return render(request,'registration.html',{'form':form})
+
+
+def geoCoordenada(endereco):
+    address=endereco.replace(' ','+')
+    api_key = getattr(settings, "API_MAPS", None)
+    url = 'https://maps.googleapis.com/maps/api/geocode/json?address={0}&key={1}'.format(urllib.parse.quote(address), api_key)
+    response = urllib.request.urlopen(url).read().decode('utf8')
+    result = json.loads(response)
+    latitude = None
+    longitude= None
+    if result['status'] == 'OK':
+        latitude = result['results'][0]['geometry']['location']['lat']
+        longitude = result['results'][0]['geometry']['location']['lng']
+    else:
+        latitude = longitude = 0
+    return latitude,longitude
 
 
 class JSONResponse(HttpResponse):

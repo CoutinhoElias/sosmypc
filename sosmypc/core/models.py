@@ -13,6 +13,7 @@ class Pessoa(models.Model):# TA FEITO
     username = models.OneToOneField(User, blank=True, null=True)
     nomepessoa = models.CharField('Nome', max_length=100, null=False, blank=False)
     sobrenomepessoa = models.CharField('Sobrenome', max_length=100, null=False, blank=False)
+    cep = models.CharField('Cep', max_length=10, null=True, blank=False)
     tipologradouro = models.CharField('Tipo Logradouro', max_length=100, null=False, blank=False)
     logradouro = models.CharField('Logradouro', max_length=100)
     numero = models.IntegerField('Número', null=False, blank=False)
@@ -48,7 +49,7 @@ class Profissao(models.Model):# TA FEITO
 
 #------------------------------------------------------------------------------------------------------------------------------------------
 class ProfissoesPessoa(models.Model):# MANY_TO_MANY MANUAL
-    pessoa = models.ForeignKey(Pessoa, related_name='profissoesPessoa')
+    pessoa = models.ForeignKey(Pessoa, related_name='profissoesPessoa')#
     profissao = models.ForeignKey(Profissao)
     rating = models.DecimalField(max_digits=5, decimal_places=2, default=0, null=False, blank=False)
 
@@ -88,12 +89,12 @@ class Qualificacao(models.Model):
 #------------------------------------------------------------------------------------------------------------------------------------------
 
 class QualificacaoProfissoesPessoa(models.Model):# MANY_TO_MANY MANUAL
-    profissaopessoa = models.ForeignKey(ProfissoesPessoa, related_name='qualificacaoProfissoesPessoa')
+    profissao = models.ForeignKey(ProfissoesPessoa, related_name='qualificacaoProfissoesPessoa')#, related_name='qualificacaoProfissoesPessoa'
     qualificacao = models.ForeignKey(Qualificacao)
 
 
     class Meta:
-        unique_together = ("profissaopessoa", "qualificacao")
+        unique_together = ("profissao", "qualificacao")
         verbose_name_plural = 'qualificações das profissões da pessoa'
         verbose_name = 'qualificação da profissão da pessoa'
 

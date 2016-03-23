@@ -18,18 +18,23 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from sosmypc.core import views
+from django.conf import settings
+from sosmypc.core import views, urls
 from sosmypc.core.views import geoCoordenada, pessoa_list, pessoa_detail
-from material.frontend import urls as frontend_urls
+#from material.frontend import urls as frontend_urls
 
 
 urlpatterns = [
-    url(r'', include(frontend_urls)),
-    url(r'^$', 'sosmypc.core.views.home'),
-    url(r'^registrotecnico/$', geoCoordenada, name='registrotecnico'),
+    #url(r'', include(frontend_urls)),
     url(r'^admin/', admin.site.urls),
     url(r'^pessoas/$', pessoa_list),
     url(r'^pessoas/rest$', views.rest),
     url(r'^pessoas/(?P<pk>[0-9]+)/$', pessoa_detail),
+
+    url(r'^$',views.index_html,name='sosmypc'),
+    url(r'^site/', include('sosmypc.core.urls')),
+    url(r'^listaprofissoes/$',views.lista),
+
+
 ]
 # -----------------------------------------------------------
