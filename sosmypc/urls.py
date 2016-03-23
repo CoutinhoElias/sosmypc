@@ -23,6 +23,7 @@ from sosmypc.core import views, urls
 from sosmypc.core.views import geoCoordenada, pessoa_list, pessoa_detail
 #from material.frontend import urls as frontend_urls
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
@@ -35,7 +36,7 @@ urlpatterns = [
     url(r'^$', login_required(views.index_html), name='sosmypc'),
     url(r'^site/', login_required(include('sosmypc.core.urls'))),
     url(r'^listaprofissoes/$', login_required(views.lista)),
-
+    url(r'^accounts/login/$', auth_views.login),
 
 ]
 # -----------------------------------------------------------
