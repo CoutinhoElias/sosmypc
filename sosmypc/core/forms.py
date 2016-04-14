@@ -2,6 +2,10 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from material import Layout, Row, Fieldset, Span3, Span2, Span10, Span8, Span7, Span5
+from django.forms.models import inlineformset_factory
+
+from sosmypc.core.models import ProfissoesPessoa
+from sosmypc.core.models import QualificacaoProfissoesPessoa
 
 
 class LoginForm(forms.Form):
@@ -34,7 +38,7 @@ class RegistrationForm(forms.Form, UserCreationForm):
                     'username','email',
                     Row('password1', 'password2')),
                  Fieldset('Dados Pessoais','nome',
-                    Row(Span2('cep'),#Span2('tipo_logradouro'),
+                    Row(Span2('cep'),# Span2('tipo_logradouro'),
                     Span8('logradouro'),Span2('numero')),
                     Row(Span5('bairro'),Span5('cidade'),Span2('estado'))  ),
                              'profissional', 'agree_toc')
@@ -65,6 +69,34 @@ class UserForm(forms.Form):
 class ProfissaoForm(forms.Form):
     profissao = forms.CharField(max_length=30,label="Profissao")
 
+class ProfissoesPessoaForm(forms.ModelForm):  #<<=== Utiliza o forms desta maneira para lidar com inline no template.
+        class Meta:
+            model = ProfissoesPessoa
+            fields = '__all__'
+
+
+class QualificacaoProfissoesPessoaForm(forms.ModelForm):
+        class Meta:
+            model = QualificacaoProfissoesPessoa
+            fields = '__all__'
+
+        exclude = ['profissao']
+
+# Para fazer inlineformset_factory  nos templates personalizados devemos criar os forms que vamos trabalhar.
+# Tente colocar na ordem, isso não importa mas fica legível para outro programador.
+# No exemplo criamos ProfissoesPessoaForm e QualificacaoProfissoesPessoaForm
+# Em seguida os importamos no topo desta página.
+# Enfim definimos o inlineformset_factory na linha acima destes comentáros.
+
+#
+# MAX_INGREDIENTS = 3
+#
+# IngredientFormSet = inlineformset_factory(Recipe, RecipeIngredient, fields='__all__', can_delete=False, extra=MAX_INGREDIENTS)
+#
+# class UserSubmittedRecipeForm(forms.ModelForm):
+#     class Meta:
+#         model = Recipe
+#         exclude = ('pub_date', )
 
 
 
@@ -108,7 +140,4 @@ class ProfissaoForm(forms.Form):
 
         serializers = PessoaSerializer(pessoas, many=True)
             return Response(serializers.data)
-
-
-
 """

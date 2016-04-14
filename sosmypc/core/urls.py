@@ -6,9 +6,6 @@ from . import views
 
 urlpatterns = [
    url(r'^$',views.index_html,name='sosmypc'),
-   #url(r'^login/$',views.login,name='login'),
+   #url(r'^login/$',views.login,name='login'),--
    url(r'^registro/$',views.register_html,name='registro'),
-   url(r'^login/$', views.login),
-   url(r'^logout/$', views.Logout),
-
 ]

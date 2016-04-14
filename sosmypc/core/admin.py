@@ -6,6 +6,11 @@ class PessoaModelAdmin(admin.ModelAdmin):
     list_select_related = True
     list_display = ('nomepessoa', 'tipologradouro','numero', 'bairro', 'cidade', 'estado')
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(PessoaModelAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['username'].initial = request.user.pk
+        return form
+
 
 class TecnicoModelAdmin(admin.ModelAdmin):
     #list_select_related = True
@@ -20,11 +25,19 @@ class ComentariosModelAdmin(admin.ModelAdmin):
         return obj.profissaopessoa.pessoa.nomepessoa.upper()
     pessoa__nome.short_description = u'NOME'
 
-
 class ProfissoesPessoaModelAdmin(admin.ModelAdmin):
-    list_select_related = True
-    #list_display = ('pessoa','profissoes',  'rating')
-
+    list_display = ('pessoa', 'profissao')
+    #exclude = ['pessoa',]
+    def get_form(self, request, obj=None, **kwargs):#Seta apessoa logada no template do admin
+        # print('GET_FORM_>>>>>>  ', request.user.pessoa  )
+        form = super(ProfissoesPessoaModelAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['pessoa'].initial = request.user.pk
+        return form
+    def get_queryset(self, request):# Filtra registros somente da pessoa logada
+        qs = super(ProfissoesPessoaModelAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(pessoa__username=request.user)
 
 class QualificacoesModelAdmin(admin.ModelAdmin):
     list_select_related = True

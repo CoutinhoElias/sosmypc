@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <table id="tbPessoas">
+        <thead>
+            <tr>
+                <td>pk</td>
+                <td>nome</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pessoa in pessoas %}
+                <tr>
+                    <td><input type="checkbox" id="{{ pessoa.pk }}" onchange="pegaContas(this)"></td>
+                    <td>{{ pessoa.pk }}</td>
+                    <td>{{ pessoa.nomepessoa }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    ======================== CONTAS =====================
+    <table id="tbContas">
+        <thead>
+            <tr>
+                <td>pk</td>
+                <td>valor</td>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</body>
+<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script language="javaScript" type="text/javascript">
+    function pegaContas(pessoa){
+        $.ajax({
+        type: 'GET',
+        url: '/json/contas/' + pessoa.id,
+        success: function(data) {
+            pessoa.checked = false;
+            populaTabelaContas(data)
+        }
+        });
+    }
+    function populaTabelaContas(data){
+        $("#tbContas tbody").empty();
+        for(i = 0; i< data.length; i++){
+            var row = '<tr>';
+            row += '<td>'+data[i].pk + '</td>';
+            row += '<td>'+data[i].fields['valor'] + '</td>';
+            row += '</tr>';
+            $('#tbContas tbody').append(row);
+        }
+    }
+</script>
+</html>

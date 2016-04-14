@@ -36,7 +36,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=[], cast=Csv())
 
 INSTALLED_APPS = [
     'material',
-    #'material.frontend',
+    #'material.frontend',--
     #'material.admin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,8 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'rest_framework',
     'sosmypc.core',
+    'sosmypc.core.api',
     'sosmypc.financeiro',
 ]
 

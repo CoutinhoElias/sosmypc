@@ -5,7 +5,7 @@ from sosmypc.financeiro.models import Historico, Conta, ContaPagar, ContaReceber
 
 
 class AdminHistorico(ModelAdmin):
-    list_display = ('descricao',)
+    list_display = ('descricao','valor_total',)#valor_total vem de models.py na classe HistoricoManager
 
 
 class AdminConta(ModelAdmin):

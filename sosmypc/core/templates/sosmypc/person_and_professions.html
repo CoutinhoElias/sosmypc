@@ -1,0 +1,148 @@
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+{% load material_form %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Suas Profissões</title>
+
+    <link href="{% static "/static/material/css/materialize.css" %}" rel="stylesheet">
+    <link href="{% static "/static/material/css/jquery.datetimepicker.css" %}" rel="stylesheet">
+    <link href="{% static "/static/material/css/forms.css" %}" rel="stylesheet">
+
+    <!-- JQuery -->
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <style type="text/css">
+      html, body {
+          background: #eee;
+          height: 100%;
+      }
+    </style>
+</head>
+
+<body class="valign-wrapper2">
+<div class="container expand-on-small-only">
+    <div class="row valign change-form">
+        <div class="col s12 m8 offset-m2 l8 offset-l2">
+            <div class="card">
+
+                {% block content %}
+{#                    <script>#}
+{#                        $(document).ready(function(){#}
+{#                            $("#add-item").click(function(ev) {#}
+{#                                ev.preventDefault();#}
+{#                                var count = $('#profissao-pessoa').children().length;#}
+{#                                var tmplMarkup = $("#qualificacao-profissao-pessoa").html();#}
+{#                                var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);#}
+{#                                $("div#profissao-pessoa").append(compiledTmpl);#}
+{##}
+{#                                // update form count#}
+{#                                $('#id_product-TOTAL_FORMS').attr('value', count + 1);#}
+{##}
+{#                                // some animate to scroll to view our new form#}
+{#                                $('html, body').animate({#}
+{#                                    scrollTop: $("#add-item").position().top-200#}
+{#                                }, 800);#}
+{#                            });#}
+{#                        });#}
+{#                    </script>#}
+
+
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <h1 class="page-header text-center lead">SUA PROFISSAO</h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                {{ forms|crispy }}
+                                {{ formset.management_form }}
+
+                                <div class="row">
+                                    <div class="col-md-6 col-md-offset-3">
+                                        <h1 class="page-header text-center lead">QUALIFICAÇÕES DA PROFISSÃO</h1>
+                                    </div>
+                                </div>
+
+                                <div id="profissao-pessoa" class="form-inline form-group">
+                                    {% for qualificacao_profissao_pessoa in formset %}
+                                        <div id="item-{{ forloop.counter0 }}">
+                                            {{ qualificacao_profissao_pessoa|crispy }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <a id="add-item" class="btn btn-info"><i class="fa fa-plus"></i> Add Qualificação</a>
+
+                                <div class="form-inline buttons">
+                                    <a href="{% url 'profissao-pessoa' %}" class="btn btn-warning pull-right"><i class="fa fa-times"></i> Cancelar</a>
+                                    <button class="btn btn-primary pull-right" value="Save"><i class="fa fa-floppy-o"></i> Salvar</button>
+                                </div>
+                            </form>
+                    </div>
+
+                    <script type="text/html" id="qualificacao-profissao-pessoa">
+                        <div id="item-__prefix__" style="margin-top: 10px">
+                                {{ formset.empty_form|crispy }}
+                        </div>
+                    </script>
+                {% endblock %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<script src="{% static "/static/js/cep.js" %}"></script>
+
+<script src="{% static "/static/material/js/jquery.datetimepicker.js" %}"></script>
+<script src="{% static "/static/material/js/jquery.formset.js" %}"></script>
+<script src="{% static "/static/material/js/materialize.js" %}"></script>
+<script src="{% static "/static/material/js/material_init.js" %}"></script>
+<script type="text/javascript">
+    if (navigator.appVersion.indexOf('Win') != -1) {
+        document.write('<link rel="stylesheet" type="text/css" href="/static/material/css/robotofix.css">');
+    }
+</script>
+
+</body>
+</html>
+
+
+
+<script>
+    $(document).ready(function(){
+        console.log( "ready!" );
+        $("#add-item").click(function(ev) {
+            ev.preventDefault();
+            var count = $('#profissao-pessoa').children().length;
+            var tmplMarkup = $("#qualificacao-profissao-pessoa").html();
+            var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+            $("div#profissao-pessoa").append(compiledTmpl);
+
+            // update form count
+            $('#id_product-TOTAL_FORMS').attr('value', count + 1);
+
+            // some animate to scroll to view our new form
+            $('html, body').animate({
+                scrollTop: $("#add-item").position().top-200
+            }, 800);
+        });
+    });
+</script>

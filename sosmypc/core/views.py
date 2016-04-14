@@ -1,35 +1,31 @@
-import requests
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-
-from sosmypc.core.forms import CommentForm, LoginForm, RegistrationForm
-
-from django.views.decorators.csrf import csrf_exempt
-
-from rest_framework.renderers import JSONRenderer
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
-from rest_framework import viewsets
-from sosmypc.core.models import Pessoa, ProfissoesPessoa, QualificacaoProfissoesPessoa, Profissao
-from sosmypc.core.serializers import PessoaSerializer
-
-
+from django.contrib.auth.models import User
 from django.shortcuts import render
 
+from sosmypc import settings
+from sosmypc.core.forms import CommentForm, RegistrationForm, ProfissoesPessoaForm,QualificacaoProfissoesPessoaForm
+from sosmypc.core.models import ProfissoesPessoa, QualificacaoProfissoesPessoa, Profissao
+from sosmypc.settings import LOGIN_URL
 
+from django.forms.models import inlineformset_factory
+
+# #Utilizado na classe FormsetMixin
+# from django.views.generic import CreateView, ListView, DetailView, UpdateView
+# from django.shortcuts import redirect
+# #-----------------------------------------------------------------------------
+# from django.shortcuts import render_to_response
+# from django.template import RequestContext
+# from django.core.urlresolvers import reverse
 
 from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.decorators import login_required
-
+from sosmypc.core.models import Pessoa
 import urllib, json
 
-# Create your views here.
+# Create your views here.....
 
-
-from sosmypc.core.models import Pessoa#, Qualificacao, Tecnico
-
+#import pdb; pdb.set_trace()
 def rest(request):
     pessoas = Pessoa.objects.all()
 
@@ -46,7 +42,7 @@ def rest(request):
         for profissao in profissoes:
             jsondata+='\n  {"profissao":"'+profissao.profissao.profissao+'","rating":0,'
             jsondata+='\n   "qualificacoes":['
-            qualificacoes = QualificacaoProfissoesPessoa.objects.filter(profissaopessoa=profissao)
+            qualificacoes = QualificacaoProfissoesPessoa.objects.filter(profissao=profissao)
             if qualificacoes.count() == 0:
                 jsondata+='['
             for qualificacao in qualificacoes:
@@ -57,12 +53,14 @@ def rest(request):
     jsondata = jsondata[:-1]+'\n]'
     return HttpResponse(jsondata,content_type='application/json')
 
-#-----------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------
+#Função utilizada para chamar página index
 def index_html(request):
     form = CommentForm()
     return render(request,'index.html',{'form':form})
 
-
+#----------------------------------------------------------------------------------------------------------------------
+#Funções utilizadas para Autenticação e validação.
 def login(request):
     next = request.GET.get('next', '/home/')
     if request.method == "POST":
@@ -86,34 +84,25 @@ def Logout(request):
     logout(request)
     return HttpResponseRedirect(settings.LOGIN_URL)
 
-#-----------------------------------------------------------------------------------------------------
 
-# def login_html(request):
-#     if request.method=='POST':
-#         form = LoginForm(request.POST)
-#         if form.is_valid():
-#             cd = form.cleaned_data
-#             user = authenticate(username=cd['username'],password=cd['password'])
-#             print ('Teste')
-#             if user is not None:
-#                 if user.is_active:
-#                     login(request,user)
-#                     return HttpResponse('Autenticação realizada com sucesso')
-#                 else:
-#                     return HttpResponse('Conta desabilitada')
-#             else:
-#                 return HttpResponse('Login ou senha inválidos')
-#     else:
-#         form = LoginForm()
-#     #return render(request,'sosmypc/login.html',{'form':form})
-#     return render(request,'sosmypc/login.html',{'form':form})
-
-
-def lista(request):
+#----------------------------------------------------------------------------------------------------------------------
+#Função utilizada para listar todas as profissões cadastradas
+@login_required(login_url=LOGIN_URL)
+def lista_profissoes(request):
     profissoes = Profissao.objects.all()
     return render(request,'sosmypc/professions_list.html',{'profissoes':profissoes})
 
-@login_required
+#----------------------------------------------------------------------------------------------------------------------
+#Função utilizada para listar profissões da pessoa que está logada
+@login_required(login_url=LOGIN_URL)
+def lista_profissoespessoa(request):
+    profissoespessoa = ProfissoesPessoa.objects.filter(pessoa__username=request.user)
+
+    return render(request,'sosmypc/person_and_professions.html',{'profissoespessoa':profissoespessoa})
+
+
+#----------------------------------------------------------------------------------------------------------------------
+#Função utilizada para inserir uma pessoa e user relacionados
 def register_html(request):
     if request.method=='POST':
         form = RegistrationForm(request.POST)
@@ -163,10 +152,12 @@ def register_html(request):
 
     else:
         form = RegistrationForm()
-    #return render(request,'sosmypc/login.html',{'form':form})
+
     return render(request,'registration.html',{'form':form})
 
 
+#----------------------------------------------------------------------------------------------------------------------
+#Função utilizada para recuperar coordenadas geográficas do google
 def geoCoordenada(endereco):
     address=endereco.replace(' ','+')
     api_key = getattr(settings, "API_MAPS", None)
@@ -183,64 +174,163 @@ def geoCoordenada(endereco):
     return latitude,longitude
 
 
-class JSONResponse(HttpResponse):
-    """
-    An HttpResponse that renders its content into JSON.
-    """
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        super(JSONResponse, self).__init__(content, **kwargs)
+#----------------------------------------------------------------------------------------------------------------------
+#Classes utilizadas para formulários InlinrFormset
+# class FormsetMixin(object):
+#     object = None
+#
+#     def get(self, request, *args, **kwargs):
+#         if getattr(self, 'is_update_view', False):
+#             self.object = self.get_object()
+#         form_class = self.get_form_class()
+#         form = self.get_form(form_class)
+#         formset_class = self.get_formset_class()
+#         formset = self.get_formset(formset_class)
+#         return self.render_to_response(self.get_context_data(form=form, formset=formset))
+#
+#     def post(self, request, *args, **kwargs):
+#         if getattr(self, 'is_update_view', False):
+#             self.object = self.get_object()
+#         form_class = self.get_form_class()
+#         form = self.get_form(form_class)
+#         formset_class = self.get_formset_class()
+#         formset = self.get_formset(formset_class)
+#         if form.is_valid() and formset.is_valid():
+#             return self.form_valid(form, formset)
+#         else:
+#             return self.form_invalid(form, formset)
+#
+#     def get_formset_class(self):
+#         return self.formset_class
+#
+#     def get_formset(self, formset_class):
+#         return formset_class(**self.get_formset_kwargs())
+#
+#     def get_formset_kwargs(self):
+#         kwargs = {
+#             'instance': self.object
+#         }
+#         if self.request.method in ('POST', 'PUT'):
+#             kwargs.update({
+#                 'data': self.request.POST,
+#                 'files': self.request.FILES,
+#             })
+#         return kwargs
+#
+#     def form_valid(self, form, formset):
+#         self.object = form.save()
+#         formset.instance = self.object
+#         formset.save()
+#         return redirect(self.object.get_absolute_url())
+#
+#     def form_invalid(self, form, formset):
+#         return self.render_to_response(self.get_context_data(form=form, formset=formset))
+#
+#
+# class ProfissoesPessoaCreateView(FormsetMixin, CreateView):
+#     template_name = 'sosmypc/person_and_professions_form.html'
+#     model = ProfissoesPessoa
+#     form_class = ProfissoesPessoaForm
+#     formset_class = QualificacaoProfissoesPessoaFormSet
+#
+#
+# class ProfissoesPessoaUpdateView(FormsetMixin, UpdateView):
+#     template_name = 'books/author_and_books_form.html'
+#     is_update_view = True
+#     model = ProfissoesPessoa
+#     form_class = ProfissoesPessoaForm
+#     formset_class = QualificacaoProfissoesPessoaFormSet
+#
+#
+# class QualificacaoProfissoesPessoaList(ListView):
+#
+#     model = QualificacaoProfissoesPessoa
+#
+#
+# class QualificacaoProfissoesPessoaDetail(DetailView):
+#
+#     model = QualificacaoProfissoesPessoa
+#
+#
+# class ProfissoesPessoaList(ListView):
+#
+#     model = ProfissoesPessoa
+#
+#
+# class ProfissoesPessoaDetail(DetailView):
+#
+#     model = ProfissoesPessoa
+
+#----------------------------------------------------------------------------------------------------------------------
+#Classes utilizadas para formulários InlinrFormset
+# def submit_recipe(request):
+#     if request.POST:
+#
+#         form = UserSubmittedRecipeForm(request.POST)
+#         if form.is_valid():
+#             recipe = form.save(commit=False)
+#             ingredient_formset = IngredientFormSet(request.POST, instance=recipe)
+#             if ingredient_formset.is_valid():
+#                 recipe.save()
+#                 ingredient_formset.save()
+#                 return HttpResponseRedirect(reverse('recipes_submit_posted'))
+#     else:
+#         form = UserSubmittedRecipeForm()
+#         ingredient_formset = IngredientFormSet(instance=Recipe())
+#     return render_to_response('sosmypc/person_and_professions_form.html', {
+#         "form": form,
+#         "ingredient_formset": ingredient_formset,
+#     }, context_instance=RequestContext(request))
+
+def profissoesPessoa(request):
+    profissoes_pessoa = ProfissoesPessoa()
+    qualificacao_profissao_pessoa_formset = inlineformset_factory(ProfissoesPessoa, QualificacaoProfissoesPessoa, form=QualificacaoProfissoesPessoaForm,fields='__all__', extra=1, can_delete=False,
+                                               min_num=1, validate_min=True)
+
+    if request.method == 'POST':
+        forms = ProfissoesPessoaForm(request.POST, request.FILES, instance=profissoes_pessoa, prefix='main')
+        formset = qualificacao_profissao_pessoa_formset(request.POST, request.FILES, instance=profissoes_pessoa, prefix='qualificacao')
+
+        if forms.is_valid() and formset.is_valid():
+            forms = forms.save(commit=False)
+            forms.save()
+            formset.save()
+            return HttpResponseRedirect('/person_and_professions.html')
+
+    else:
+        forms = ProfissoesPessoaForm(instance=profissoes_pessoa, prefix='profissoes')
+        formset = qualificacao_profissao_pessoa_formset(instance=profissoes_pessoa, prefix='qualificacao')
+
+    context = {
+        'forms': forms,
+        'formset': formset,
+    }
+
+    return render(request, 'sosmypc/person_and_professions.html', context)
 
 
-#@csrf_exempt
-@api_view(['GET','POST'])
-def pessoa_list(request):
-    """
-    List all code pessoas, or create a new pessoa.
-    """
-    if request.method == 'GET':
-        pessoas = Pessoa.objects.all()
-        serializer = PessoaSerializer(pessoas, many=True)
-        #return JSONResponse(serializer.data)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = PessoaSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
 
 
-@csrf_exempt
-def pessoa_detail(request, pk):
-    """
-    Retrieve, update or delete a code pessoa.
-    """
-    try:
-        pessoa = Pessoa.objects.get(pk=pk)
-    except Pessoa.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == 'GET':
-        serializer = PessoaSerializer(pessoa)
-        return JSONResponse(serializer.data)
-
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = PessoaSerializer(pessoa, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JSONResponse(serializer.data)
-        return JSONResponse(serializer.errors, status=400)
-
-    elif request.method == 'DELETE':
-        pessoa.delete()
-        return HttpResponse(status=204)
 
 
-class PessoaViewSet(viewsets.ModelViewSet):
-    queryset = Pessoa.objects.all().order_by('nomepessoa')
-    serializer_class = PessoaSerializer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

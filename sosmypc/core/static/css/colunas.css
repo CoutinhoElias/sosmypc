@@ -1,0 +1,29 @@
+.partners{
+	text-align:center;
+	background: url(../images/bg.png);
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center;
+	background-size: cover;
+}
+.features-partners {
+	padding: 3.5em 0 3em 0;
+}
+.Features-partner{
+	float: left;
+	width: 45.0%;
+	margin-right: 3%;
+	margin-bottom: 0.5em;
+}
+.Features-partner h3{
+	color: #fff;
+	font-family: 'gandhi_sansregular';
+	font-size: 1.8em;
+}
+.Features-partner p{
+	color: #000;
+	font-family: 'gandhi_sansregular';
+	font-size: 1em;
+	padding: 0.5em 0;
+	line-height: 1.5em;
+}

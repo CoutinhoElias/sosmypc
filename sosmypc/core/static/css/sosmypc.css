@@ -273,7 +273,7 @@ img{max-width:100%;}
 .Testimonials{
 	text-align:center;
 	/*background: url(../images/test-bg.jpg) no-repeat #E7E7E7;*/
-	background: url(../images/bg.png);
+	/*background: url(../images/bg.png);*/
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position: center;

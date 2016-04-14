@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 #from __future__ import unicode_literals
 from sosmypc.core.static.material.frontend import Module
+from django.db import models
 
 
 class Sample(Module):
@@ -10,7 +11,7 @@ class Sample(Module):
 
 
 class Pessoa(models.Model):# TA FEITO
-    username = models.OneToOneField(User, blank=True, null=True)
+    username = models.OneToOneField(User, blank=True, null=True, related_name='pessoa') #"%(class)s_related"
     nomepessoa = models.CharField('Nome', max_length=100, null=False, blank=False)
     sobrenomepessoa = models.CharField('Sobrenome', max_length=100, null=False, blank=False)
     cep = models.CharField('Cep', max_length=10, null=True, blank=False)
@@ -31,9 +32,9 @@ class Pessoa(models.Model):# TA FEITO
 
     def __str__(self):
         return self.nomepessoa
+#---------------------------------------------------------------------------------------------------------------------------------------
 
 
-#------------------------------------------------------------------------------------------------------------------------------------------
 class Profissao(models.Model):# TA FEITO
     profissao = models.CharField(max_length=100,null=False, blank=False)
 
@@ -45,10 +46,10 @@ class Profissao(models.Model):# TA FEITO
 
     def __str__(self):
         return self.profissao
-
-
 #------------------------------------------------------------------------------------------------------------------------------------------
-class ProfissoesPessoa(models.Model):# MANY_TO_MANY MANUAL
+
+
+class ProfissoesPessoa(models.Model):
     pessoa = models.ForeignKey(Pessoa, related_name='profissoesPessoa')#
     profissao = models.ForeignKey(Profissao)
     rating = models.DecimalField(max_digits=5, decimal_places=2, default=0, null=False, blank=False)
@@ -60,11 +61,6 @@ class ProfissoesPessoa(models.Model):# MANY_TO_MANY MANUAL
         verbose_name = 'profissão da pessoa'
 
 
-    def __unicode__(self):
-        return "%s is in profissao %s (as %s)" % (self.pessoa, self.profissao, self.type) # <<=== Ambas são Variáveis local deste class
-
-
-
     def __str__(self):
         return self.profissao.profissao #<<=== Profissao do class profissao equivalente ao nome da profissão
                    #self.profissao. <<=== Variavel deste class, equivalente ao id da profissao nesta tabela
@@ -72,9 +68,8 @@ class ProfissoesPessoa(models.Model):# MANY_TO_MANY MANUAL
 
     def nomepessoa(self):
         return self.pessoa.nomepessoa
-
-
 #------------------------------------------------------------------------------------------------------------------------------------------
+
 
 class Qualificacao(models.Model):
     descricao = models.CharField(max_length=100, null=False, blank=False)
@@ -85,11 +80,11 @@ class Qualificacao(models.Model):
 
     def __str__(self):
         return self.descricao
-
 #------------------------------------------------------------------------------------------------------------------------------------------
 
-class QualificacaoProfissoesPessoa(models.Model):# MANY_TO_MANY MANUAL
-    profissao = models.ForeignKey(ProfissoesPessoa, related_name='qualificacaoProfissoesPessoa')#, related_name='qualificacaoProfissoesPessoa'
+
+class QualificacaoProfissoesPessoa(models.Model):# #Resolvido, não modificar
+    profissao = models.ForeignKey(ProfissoesPessoa, related_name='qualificacaoProfissoesPessoa')
     qualificacao = models.ForeignKey(Qualificacao)
 
 
@@ -99,24 +94,18 @@ class QualificacaoProfissoesPessoa(models.Model):# MANY_TO_MANY MANUAL
         verbose_name = 'qualificação da profissão da pessoa'
 
 
+    def __str__(self):
+        return self.qualificacao.descricao
 
-    #def nomepessoa(self):
-    #    return self.qualificacao.descricao
-
+    def __unicode__(self):
+        return '%d: %s' % (self.profissao, self.qualificacao)
 #------------------------------------------------------------------------------------------------------------------------------------------
-"""class Comentarios(models.Model):# TA FEITO
-    profissaopessoa = models.ForeignKey(ProfissoesPessoa)
-    comentario = models.TextField(max_length=200,null=False, blank=False)
-    rating = models.DecimalField(max_digits=5, decimal_places=2, default=0, null=False, blank=False)
-
-
-
-    class Meta:
-        #unique_together = ("pessoa", "profissao")
-        verbose_name_plural = 'comentários dos profissionais'
-        verbose_name = 'comentários do profissional'
-
-    def nomepessoa(self):
-        return self.profissaopessoa.pessoa.nomepessoa"""
-
-
+#
+# class Recipe(models.Model):
+#     pub_date = models.DateTimeField('Date Published', auto_now_add = True)
+#     title = models.CharField(max_length=200)
+#     instructions = models.TextField()
+#
+# class RecipeIngredient(models.Model):
+#     recipe = models.ForeignKey(Recipe, related_name="ingredients")
+#     ingredient = models.CharField(max_length=255)
