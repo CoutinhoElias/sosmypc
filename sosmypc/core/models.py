@@ -2,12 +2,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 #from __future__ import unicode_literals
-from sosmypc.core.static.material.frontend import Module
+
 from django.db import models
 
 
-class Sample(Module):
-    icon = 'mdi-image-compare'
+# class Sample(Module):
+#     icon = 'mdi-image-compare'
 
 
 class Pessoa(models.Model):# TA FEITO
@@ -50,7 +50,7 @@ class Profissao(models.Model):# TA FEITO
 
 
 class ProfissoesPessoa(models.Model):
-    pessoa = models.ForeignKey(Pessoa, related_name='profissoesPessoa')#
+    pessoa = models.ForeignKey(Pessoa, related_name='profissoesPessoa')
     profissao = models.ForeignKey(Profissao)
     rating = models.DecimalField(max_digits=5, decimal_places=2, default=0, null=False, blank=False)
 

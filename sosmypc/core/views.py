@@ -3,11 +3,12 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 
 from sosmypc import settings
-from sosmypc.core.forms import CommentForm, RegistrationForm, ProfissoesPessoaForm,QualificacaoProfissoesPessoaForm
+from sosmypc.core.forms import CommentForm, RegistrationForm
 from sosmypc.core.models import ProfissoesPessoa, QualificacaoProfissoesPessoa, Profissao
 from sosmypc.settings import LOGIN_URL
 
-from django.forms.models import inlineformset_factory
+import extra_views
+from material import LayoutMixin, Layout, Fieldset, Inline, Row, Span2, Span5, Span7
 
 # #Utilizado na classe FormsetMixin
 # from django.views.generic import CreateView, ListView, DetailView, UpdateView
@@ -282,32 +283,52 @@ def geoCoordenada(endereco):
 #         "ingredient_formset": ingredient_formset,
 #     }, context_instance=RequestContext(request))
 
-def profissoesPessoa(request):
-    profissoes_pessoa = ProfissoesPessoa()
-    qualificacao_profissao_pessoa_formset = inlineformset_factory(ProfissoesPessoa, QualificacaoProfissoesPessoa, form=QualificacaoProfissoesPessoaForm,fields='__all__', extra=1, can_delete=False,
-                                               min_num=1, validate_min=True)
+# def profissoesPessoa(request):
+#     profissoes_pessoa = ProfissoesPessoa()
+#     qualificacao_profissao_pessoa_formset = inlineformset_factory(ProfissoesPessoa, QualificacaoProfissoesPessoa, form=QualificacaoProfissoesPessoaForm,fields='__all__', extra=1, can_delete=False,
+#                                                min_num=1, validate_min=True)
+#
+#     if request.method == 'POST':
+#         forms = ProfissoesPessoaForm(request.POST, request.FILES, instance=profissoes_pessoa, prefix='main')
+#         formset = qualificacao_profissao_pessoa_formset(request.POST, request.FILES, instance=profissoes_pessoa, prefix='qualificacao')
+#
+#         if forms.is_valid() and formset.is_valid():
+#             forms = forms.save(commit=False)
+#             forms.save()
+#             formset.save()
+#             return HttpResponseRedirect('/person_and_professions.html')
+#
+#     else:
+#         forms = ProfissoesPessoaForm(instance=profissoes_pessoa, prefix='profissoes')
+#         formset = qualificacao_profissao_pessoa_formset(instance=profissoes_pessoa, prefix='qualificacao')
+#
+#     context = {
+#         'forms': forms,
+#         'formset': formset,
+#     }
+#
+#     return render(request, 'sosmypc/person_and_professions.html', context)
 
-    if request.method == 'POST':
-        forms = ProfissoesPessoaForm(request.POST, request.FILES, instance=profissoes_pessoa, prefix='main')
-        formset = qualificacao_profissao_pessoa_formset(request.POST, request.FILES, instance=profissoes_pessoa, prefix='qualificacao')
 
-        if forms.is_valid() and formset.is_valid():
-            forms = forms.save(commit=False)
-            forms.save()
-            formset.save()
-            return HttpResponseRedirect('/person_and_professions.html')
 
-    else:
-        forms = ProfissoesPessoaForm(instance=profissoes_pessoa, prefix='profissoes')
-        formset = qualificacao_profissao_pessoa_formset(instance=profissoes_pessoa, prefix='qualificacao')
+#-----------------------------------------------------------------------------------------------------------------------
+class ItemInline(extra_views.InlineFormSet):
+    model = QualificacaoProfissoesPessoa
+    fields = ['id', 'qualificacao']
 
-    context = {
-        'forms': forms,
-        'formset': formset,
-    }
 
-    return render(request, 'sosmypc/person_and_professions.html', context)
-
+class NewProfissoesPessoaView(LayoutMixin,
+                      extra_views.NamedFormsetsMixin,
+                      extra_views.CreateWithInlinesView):
+    title = "Nova Profissão"
+    model = ProfissoesPessoa
+    layout = Layout(
+        Row('pessoa', 'profissao', 'rating'),
+        # Fieldset('Address',
+        #          Row(Span7('address'), Span5('zipcode')),
+        #          Row(Span5('city'), Span2('state'), Span5('country'))),
+        Inline('Qualificações da Profissão', ItemInline),
+    )
 
 
 

@@ -1,11 +1,11 @@
+import datetime as datetime
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from material import Layout, Row, Fieldset, Span3, Span2, Span10, Span8, Span7, Span5
-from django.forms.models import inlineformset_factory
+from django.forms.formsets import formset_factory
 
-from sosmypc.core.models import ProfissoesPessoa
-from sosmypc.core.models import QualificacaoProfissoesPessoa
+from sosmypc.core.models import Pessoa
+from sosmypc.core.static.material import FormSetField, Column
 
 
 class LoginForm(forms.Form):
@@ -69,36 +69,39 @@ class UserForm(forms.Form):
 class ProfissaoForm(forms.Form):
     profissao = forms.CharField(max_length=30,label="Profissao")
 
-class ProfissoesPessoaForm(forms.ModelForm):  #<<=== Utiliza o forms desta maneira para lidar com inline no template.
-        class Meta:
-            model = ProfissoesPessoa
-            fields = '__all__'
 
 
-class QualificacaoProfissoesPessoaForm(forms.ModelForm):
-        class Meta:
-            model = QualificacaoProfissoesPessoa
-            fields = '__all__'
 
-        exclude = ['profissao']
 
-# Para fazer inlineformset_factory  nos templates personalizados devemos criar os forms que vamos trabalhar.
-# Tente colocar na ordem, isso não importa mas fica legível para outro programador.
-# No exemplo criamos ProfissoesPessoaForm e QualificacaoProfissoesPessoaForm
-# Em seguida os importamos no topo desta página.
-# Enfim definimos o inlineformset_factory na linha acima destes comentáros.
 
+# class ProfissoesPessoaForm(forms.Form):
+#     class QualificacaoProfissoesPessoaForm(forms.Form):
+#         name = forms.CharField()
+#         relationship = forms.ChoiceField(choices=(
+#             ('SPS', 'Spouse'), ('PRT', 'Partner'),
+#             ('FRD', 'Friend'), ('CLG', 'Colleague')))
+#         daytime_phone = forms.CharField()
+#         evening_phone = forms.CharField(required=False)
 #
-# MAX_INGREDIENTS = 3
+#     registration_date = forms.DateField(initial=datetime.date.today)
+#     full_name = forms.CharField()
+#     birth_date = forms.DateField()
+#     height = forms.IntegerField(help_text='cm')
+#     weight = forms.IntegerField(help_text='kg')
+#     primary_care_physician = forms.CharField()
+#     date_of_last_appointment = forms.DateField()
+#     home_phone = forms.CharField()
+#     work_phone = forms.CharField(required=False)
 #
-# IngredientFormSet = inlineformset_factory(Recipe, RecipeIngredient, fields='__all__', can_delete=False, extra=MAX_INGREDIENTS)
 #
-# class UserSubmittedRecipeForm(forms.ModelForm):
-#     class Meta:
-#         model = Recipe
-#         exclude = ('pub_date', )
-
-
+#
+#     emergency_contacts = FormSetField(formset_factory(QualificacaoProfissoesPessoaForm, extra=2, can_delete=True))
+#
+#     layout = Layout(Row(Column('full_name', 'birth_date',
+#                                Row('height', 'weight'), span_columns=3), 'registration_date'),
+#                     Row(Span3('primary_care_physician'), 'date_of_last_appointment'),
+#                     Row('home_phone', 'work_phone'),
+#                     Fieldset('Emergence Numbers', 'QualificacaoProfissoesPessoaForm'))
 
 """Passos para trabalhar com django rest
 

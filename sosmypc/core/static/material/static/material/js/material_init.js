@@ -1,26 +1,29 @@
-if (navigator.appVersion.indexOf('Win') != -1) {
-    document.write('<link rel="stylesheet" type="text/css" href="{% static "material/css/robotofix.css" %}">');
-}
+$(document).on('ready pjax:complete', function() {
+    function material_init($container) {
+        $container.find('.dropdown-button.constrain_width').dropdown({hover: false, constrain_width: true});
+        $container.find('.dropdown-button').not('.constrain_width').dropdown({hover: false, constrain_width: false});
+        $container.find('.button-collapse').sideNav();
+        $container.find('select').not('.disabled').not('.material-ignore').material_select();
 
-$(function() {
-    $('.dropdown-button').dropdown({hover: false});
-    $('.button-collapse').sideNav();
-    $('select').not('.disabled').not('.material-ignore').material_select();
-
-    $('[data-form-control="date"]').each(function() {
-        var input = $(this);
-        input.datetimepicker({format: input.data('date-format'), timepicker:false, mask:false});
+        $container.find('[data-form-control="date"]').each(function() {
+            var input = $(this);
+            input.datetimepicker({format: input.data('date-format'), timepicker:false, mask:false, scrollInput:false});
+        });
+        $container.find('[data-form-control="time"]').each(function() {
+            var input = $(this);
+            input.datetimepicker({format: input.data('date-format'), datepicker: false, timepicker:true, mask:false, scrollInput:false});
+        });
+        $container.find('[data-form-control="datetime"]').each(function() {
+            var input = $(this);
+            input.datetimepicker({format: input.data('date-format'), datepicker: true, timepicker:true, mask:false, scrollInput:false});
+        });
+    }
+    $('.formset-field').formset({
+        animateForms: true,
+        newFormCallback: material_init
     });
-    $('[data-form-control="time"]').each(function() {
-        var input = $(this);
-        input.datetimepicker({format: input.data('date-format'), datepicker: false, timepicker:true, mask:false});
-    });
-    $('[data-form-control="datetime"]').each(function() {
-        var input = $(this);
-        input.datetimepicker({format: input.data('date-format'), datepicker: true, timepicker:true, mask:false});
-    });
 
-
+    material_init($(document));
     /*
       In chrome, there is no way to get to know is autofill
       fills the password field until user is interacted. Assume

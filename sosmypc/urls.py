@@ -42,16 +42,9 @@ urlpatterns = [
     url(r'^listaprofissoes/$', login_required(views.lista_profissoes)),
     url(r'^profissoespessoa/$', login_required(views.lista_profissoespessoa)),
 
-    url(r'^ppp/$', login_required(views.profissoesPessoa)),
-    url(r'^aqui$', login_required(views.profissoesPessoa), name='profissao-pessoa'),# Deu certo.
+    #url(r'^ppp/$', login_required(views.profissoesPessoa)),
+    #url(r'^aqui$', login_required(views.profissoesPessoa), name='profissao-pessoa'),# Deu certo.
 
-    # url(r'^(?P<pk>\d+)/$', views.QualificacaoProfissoesPessoaDetail.as_view(), name='book_detail'),
-    # url(r'^add/$', views.ProfissoesPessoaCreateView.as_view(), name='person_and_professions_form'),#add_author_and_books
-    # url(r'^(?P<pk>\d+)/edit/$', views.ProfissoesPessoaUpdateView.as_view(), name='edit_author_and_books'),
-    # url(r'^authors/$', views.ProfissoesPessoaList.as_view(), name='author_list'),
-    # url(r'^authors/(?P<pk>\d+)/$', views.ProfissoesPessoaDetail.as_view(), name='author_detail'),
-    #
-    #  url(r'^inline/$', login_required(views.submit_recipe)),
 
     url(r'^login/$', 'django.contrib.auth.views.login'),
     url(r'^', include('sosmypc.core.api.urls')),

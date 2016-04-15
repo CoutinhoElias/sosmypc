@@ -1,23 +1,39 @@
-# -*- coding: utf-8 -*-
 import datetime
+from importlib import import_module
+
 from django.apps import apps
-from django.contrib.admin import site
 from django.contrib.admin.views.main import PAGE_VAR
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.conf import settings
 from django.db import models
-from django.template import Library
-from django.template.defaultfilters import stringfilter
 from django.utils import formats, six
 from django.utils.dates import MONTHS
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
 from django.utils.translation import ugettext as _
+from django.template import Library
 
 from material import Layout, Fieldset, Row
+from material.compat import simple_tag
+from ..base import AdminReadonlyField, TabularInline
 
 
 register = Library()
+
+
+def get_admin_site():
+    site_module = getattr(
+        settings,
+        'MATERIAL_ADMIN_SITE',
+        'django.contrib.admin.site'
+    )
+    mod, inst = site_module.rsplit('.', 1)
+    mod = import_module(mod)
+    return getattr(mod, inst)
+
+
+site = get_admin_site()
 
 
 @register.assignment_tag
@@ -79,17 +95,47 @@ def get_app_list(request):
 
 
 @register.assignment_tag
-def fieldset_layout(adminform):
+def fieldset_layout(adminform, inline_admin_formsets):
+    layout = getattr(adminform.model_admin, 'layout', None)
+    if layout is not None:
+        for element in layout.elements:
+            # TODO Ugly hack to substitute inline classes to instances
+            if isinstance(element, TabularInline) and isinstance(element.inline, type):
+                for inline in inline_admin_formsets:
+                    if inline.formset.model == element.inline.model:
+                        element.inline = inline
+        return layout
+
     sets = []
+
     for fieldset in adminform:
         fields = []
-        for field in fieldset.fields:
-            if isinstance(field, (list, tuple)):
-                fields.append(Row(*field))
-            else:
-                fields.append(field)
 
-        sets.append(Fieldset(fieldset.name, *fields))
+        for line in fieldset:
+            line_fields = []
+
+            for fieldset_field in line:
+                field = None
+
+                if getattr(fieldset_field, 'is_readonly', False):
+                    field = AdminReadonlyField(fieldset_field)
+                else:
+                    field = fieldset_field.field.name
+
+                line_fields.append(field)
+
+            if len(line_fields) == 1:
+                fields.append(line_fields[0])
+            else:
+                fields.append(Row(*line_fields))
+
+        if fieldset.name:
+            sets.append(Fieldset(fieldset.name, *fields))
+        else:
+            sets += fields
+
+    for inline in inline_admin_formsets:
+        sets.append(TabularInline(inline))
 
     return Layout(*sets)
 
@@ -208,10 +254,52 @@ def date_hierarchy(cl):
                 } for year in years]
             }
 
-@register.filter(name='custom_app_label')
-@stringfilter
-def custom_app_label(value):
-    custom_app_labels = {
-        'Auth':  _("Authentication and Authorization"),
+
+def admin_related_field_urls(bound_field):
+    """
+    Construct add/remove/change links for admin related field.
+
+    Usage:
+
+        {% admin_related_field_urls bound_field as bound_field_urls %}
+    """
+    from django.contrib.admin.views.main import IS_POPUP_VAR, TO_FIELD_VAR
+
+    rel_widget = bound_field.field.widget
+    rel_opts = rel_widget.rel.model._meta
+    info = (rel_opts.app_label, rel_opts.model_name)
+    rel_widget.widget.choices = rel_widget.choices
+    url_params = '&'.join("%s=%s" % param for param in [
+        (TO_FIELD_VAR, rel_widget.rel.get_related_field().name),
+        (IS_POPUP_VAR, 1),
+    ])
+
+    context = {
+        'widget': rel_widget.widget.render(bound_field.name, bound_field.value()),
+        'name': bound_field.name,
+        'url_params': url_params,
+        'model': rel_opts.verbose_name,
     }
-    return custom_app_labels.get(value, value)
+    if rel_widget.can_change_related:
+        change_related_template_url = rel_widget.get_related_url(info, 'change', '__fk__')
+        context.update(
+            can_change_related=True,
+            change_related_template_url=change_related_template_url,
+        )
+    if rel_widget.can_add_related:
+        add_related_url = rel_widget.get_related_url(info, 'add')
+        context.update(
+            can_add_related=True,
+            add_related_url=add_related_url,
+        )
+    if rel_widget.can_delete_related:
+        delete_related_template_url = rel_widget.get_related_url(info, 'delete', '__fk__')
+        context.update(
+            can_delete_related=True,
+            delete_related_template_url=delete_related_template_url,
+        )
+
+    return context
+
+
+simple_tag(register, admin_related_field_urls)

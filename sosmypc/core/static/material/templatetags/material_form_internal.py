@@ -1,11 +1,19 @@
+from __future__ import division
+
+import math
 import re
+from collections import OrderedDict
+
 from django.forms.forms import BoundField
-from django.template.base import Library, Node, TemplateSyntaxError, Variable, token_kwargs
+from django.template import Library
+from django.template.base import Node, TemplateSyntaxError, Variable, token_kwargs
 from django.utils import formats
 from django.utils.encoding import force_text
 
 from ..base import Field
-from .material_form import FormPartNode, _render_parts
+from ..fields import FormSetField
+from ..widgets import SelectDateWidget
+from .material_form import FormPartNode, WidgetAttrNode, _render_parts
 
 
 register = Library()
@@ -52,6 +60,10 @@ class FormRenderNode(Node):
         children = (node for node in self.nodelist if isinstance(node, FormPartNode))
         _render_parts(context, children)
 
+        attrs = (node for node in self.nodelist if isinstance(node, WidgetAttrNode))
+        for attr in attrs:
+            attr.render(context)
+
         # render element
         if isinstance(element, BoundField):
             return Field(element.name).render(context, **options)
@@ -62,28 +74,17 @@ class FormRenderNode(Node):
             raise TemplateSyntaxError("form_render can't render %r" % (element, ))
 
 
-@register.tag('tagattrs')
-class TagAttrsNode(Node):
-    def __init__(self, parser, token):
-        bits = token.split_contents()
-        self.nodelist = parser.parse(('end{}'.format(bits[0]),))
-        parser.delete_first_token()
-
-    def render(self, context):
-        """
-        Remove empty attributes and newlines
-        """
-        value = self.nodelist.render(context)
-        value = re.sub('\w+=\"\s*\"', '', value)
-        return re.sub('[\n ]+', ' ', value).strip()
-
-
 @register.filter
 def multiwidget_value(bound_field, pos):
     value = bound_field.value()
     if not isinstance(value, (list, tuple)):
         value = bound_field.field.widget.decompress(value)
     return value[pos]
+
+
+@register.filter
+def have_default_choice(field):
+    return [choice for choice, _ in field.widget.choices if choice is None or choice == ""]
 
 
 @register.filter
@@ -119,3 +120,85 @@ def datepicker_value(value, date_format):
 @register.filter('force_text')
 def force_text_impl(value):
     return force_text(value)
+
+
+@register.filter
+def split_choices_by_columns(choices, columns):
+    columns = int(columns)
+    col_span = 12 // columns
+    per_column = int(math.ceil(len(choices)/columns))
+    choices = [tuple(choice) + (i,) for i, choice in enumerate(choices)]
+    return [(col_span, choices[i:i + per_column]) for i in range(0, len(choices), per_column)]
+
+
+@register.filter
+def formset_value(bound_field):
+    if not isinstance(bound_field.field, FormSetField):
+        raise TemplateSyntaxError('{} field should be FormSetField, got {}'.format(bound_field.name, bound_field.field))
+
+    value = bound_field.value()
+    if value is None:
+        value = bound_field.field.widget.get_formset(bound_field.name)
+    return value
+
+
+@register.filter
+def select_date_widget_wrapper(bound_field):
+    class Wrapper(object):
+        def __init__(self, bound_field):
+            self.bound_field = bound_field
+
+        @property
+        def selects(self):
+            widget = SelectDateWidget(self.bound_field.field.widget)
+            for data in widget.selects_data(self.bound_field.value()):
+                yield data
+
+    return Wrapper(bound_field)
+
+
+@register.filter
+def is_initial_file(value):
+    return bool(value and getattr(value, 'url', False))
+
+
+@register.filter
+def is_null_boolean_selected(bound_field, value):
+    try:
+        current_value = {True: '2', False: '3', '2': '2', '3': '3'}[bound_field.value()]
+    except KeyError:
+        current_value = '1'
+    return value == current_value
+
+
+@register.filter
+def select_options(bound_field):
+    """
+    Returns list of (group_name, option_label, option_value, selected).
+
+    If group_name is None - option is not belongs to group
+    """
+    selected = bound_field.value()
+    if not isinstance(selected, (list, tuple)):
+        selected = [selected]
+    selected = set(force_text(v) for v in selected)
+
+    groups = OrderedDict()
+    for option_value, option_label in bound_field.field.widget.choices:
+        if isinstance(option_label, (list, tuple)):
+            if option_value not in groups:
+                groups[option_value] = []
+            for value, label in option_label:
+                if value is None:
+                    value = ''
+                value = force_text(value)
+                groups[option_value].append((label, value, value in selected))
+        else:
+            if None not in groups:
+                groups[None] = []
+            if option_value is None:
+                option_value = ''
+            value = force_text(option_value)
+            groups[None].append((option_label, option_value, value in selected))
+
+    return groups.items()

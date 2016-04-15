@@ -5,29 +5,31 @@
 {% block extrajs %}
 <script type="text/javascript">
 (function($) {
-    $(document).ready(function($) {
-        var table = $("#result_list").DataTable({
-            "paging":     false,
-            "ordering":   false,
-            "info":       false,
-            "bFilter":    false,
-            "bAutoWidth": false,
+  $(document).ready(function($) {
+    if ($('#result_list').length != 0) {
+      var table = $("#result_list").DataTable({
+        "paging":     false,
+        "ordering":   false,
+        "info":       false,
+        "bFilter":    false,
+        "bAutoWidth": false,
             "responsive": true
-        });
-        new $.fn.dataTable.FixedHeader(table);
+      });
+      new $.fn.dataTable.FixedHeader(table);
+    }
 
-        $("#changelist-search-button").click(function() {
-            $("#changelist-search").submit();
-        });
-
-        $(".admin_filter").change(function() {
-		    window.location.href = $(this).val();
-		});
-
-		$(".date_hierarchy").change(function() {
-		    window.location.href = $(this).val();
-		});
+    $("#changelist-search-button").click(function() {
+      $("#changelist-search").submit();
     });
+
+    $(".admin_filter").change(function() {
+      window.location.href = $(this).val();
+    });
+
+    $(".date_hierarchy").change(function() {
+      window.location.href = $(this).val();
+    });
+  });
 })(jQuery);
 </script>
 {% endblock %}
@@ -35,15 +37,15 @@
 {% block brand-logo %}{{ cl.opts.verbose_name_plural|title }}{% endblock %}
 
 {% block breadcrumbs_items %}
-<a href="{% url 'admin:index' %}">Todos os Aplicativos</a> &rang;
-<a href="{% url opts|admin_urlname:'changelist' %}"><i class="fa adm-app-default adm-{{ opts.app_label }}-{{ opts.object_name|lower }}"></i> &nbsp;&nbsp;{{ opts.verbose_name_plural|capfirst }}</a>
+<a href="{% url 'admin:index' %}">{% trans 'All apps' %}</a> &rang;
+<a href="{% url opts|admin_urlname:'changelist' %}"><i class="zmdi adm-app-default adm-{{ opts.app_label }}-{{ opts.object_name|lower }}"></i> &nbsp;&nbsp;{{ opts.verbose_name_plural|capfirst }}</a>
 {% endblock %}
 
 
 {% block content %}
 <div class="row">
     <div class="col s12 m8 l9">
-        <div class="card">
+        <div class="card data-card">
             <div class="card-content">
                 {% block result_list %}
                 {% result_list cl %}
@@ -56,7 +58,7 @@
     <div class="col s12 m4 l3">
         <div class="card filters">
             <div class="card-content">
-                <span class="card-title black-text" style="margin-bottom:20px">Filters</span>
+                <span class="card-title black-text" style="margin-bottom:20px">{% trans 'Filters' %}</span>
                 {% block search %}{% search_form cl %}{% endblock %}
 
                 {% block filters %}
