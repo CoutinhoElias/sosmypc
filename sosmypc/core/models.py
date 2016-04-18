@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth.models import User
+from django.shortcuts import resolve_url as r
 #from __future__ import unicode_literals
 
 from django.db import models
@@ -68,6 +69,9 @@ class ProfissoesPessoa(models.Model):
 
     def nomepessoa(self):
         return self.pessoa.nomepessoa
+
+    def get_absolute_url(self):
+        return r('profissoes:detalhes_profissoes', pk=self.pk)
 #------------------------------------------------------------------------------------------------------------------------------------------
 
 

@@ -24,36 +24,26 @@ from sosmypc.core.views import geoCoordenada#, pessoa_list, pessoa_detail
 from django.contrib.auth.decorators import login_required
 #from material.frontend import urls as frontend_urls
 
-# from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
 # from django.contrib.auth import views as auth_views
 # from sosmypc.financeiro.views import lista, json_contas
 
 
 urlpatterns = [
-    #url(r'', include(frontend_urls)),--
     url(r'^admin/', admin.site.urls),
-    #url(r'^pessoas/$', pessoa_list),
     url(r'^pessoas/rest$', views.rest),
-    #url(r'^pessoas/(?P<pk>[0-9]+)/$', pessoa_detail),
 
     url(r'^$',views.index_html,name='sosmypc'),
     url('^', include('django.contrib.auth.urls')),
+    #url(r'^profissoes/', include('sosmypc.core.urls', namespace="profissoes")),
     url(r'^site/', include('sosmypc.core.urls')),
-    url(r'^listaprofissoes/$', login_required(views.lista_profissoes)),
-    url(r'^profissoespessoa/$', login_required(views.lista_profissoespessoa)),
-
-    #url(r'^ppp/$', login_required(views.profissoesPessoa)),
-    #url(r'^aqui$', login_required(views.profissoesPessoa), name='profissao-pessoa'),# Deu certo.
-
+    #url(r'^listaprofissoes/$', login_required(views.lista_profissoes)),
+    #url(r'^profissoespessoa/$', login_required(views.lista_profissoespessoa)),
 
     url(r'^login/$', 'django.contrib.auth.views.login'),
     url(r'^', include('sosmypc.core.api.urls')),
 
     url(r'^financeiro/', include('sosmypc.financeiro.urls')),
-
-    # url(r'^pessoas/lista/$', lista, name='pessoas_lista'),
-    # url(r'^json/contas/(?P<id_pessoa>[0-9]+)/$', json_contas, name='json_contas'),
-
 
 ]
 # -----------------------------------------------------------
