@@ -46,4 +46,3 @@ urlpatterns = [
     url(r'^financeiro/', include('sosmypc.financeiro.urls')),
 
 ]
-# -----------------------------------------------------------

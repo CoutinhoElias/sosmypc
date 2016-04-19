@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from sosmypc.core import forms
 from . import views
 
-
 urls_profissoes =[
      url(r'^$', views.NewProfissoesPessoaView.as_view(template_name="person_and_professions.html")),
      url(r'^(?P<pk>\d+)/$', views.UpdateProfissoesPessoaView.as_view(), name='detalhes_profissoes'),

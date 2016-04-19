@@ -13,17 +13,6 @@ import extra_views
 from material import LayoutMixin, Layout, Fieldset, Inline, Row, Span2, Span5, Span7
 from braces.views import LoginRequiredMixin
 
-
-
-
-# #Utilizado na classe FormsetMixin
-# from django.views.generic import CreateView, ListView, DetailView, UpdateView
-# from django.shortcuts import redirect
-# #-----------------------------------------------------------------------------
-# from django.shortcuts import render_to_response
-# from django.template import RequestContext
-# from django.core.urlresolvers import reverse
-
 from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.decorators import login_required
@@ -181,142 +170,6 @@ def geoCoordenada(endereco):
     return latitude,longitude
 
 
-#----------------------------------------------------------------------------------------------------------------------
-#Classes utilizadas para formulários InlinrFormset
-# class FormsetMixin(object):
-#     object = None
-#
-#     def get(self, request, *args, **kwargs):
-#         if getattr(self, 'is_update_view', False):
-#             self.object = self.get_object()
-#         form_class = self.get_form_class()
-#         form = self.get_form(form_class)
-#         formset_class = self.get_formset_class()
-#         formset = self.get_formset(formset_class)
-#         return self.render_to_response(self.get_context_data(form=form, formset=formset))
-#
-#     def post(self, request, *args, **kwargs):
-#         if getattr(self, 'is_update_view', False):
-#             self.object = self.get_object()
-#         form_class = self.get_form_class()
-#         form = self.get_form(form_class)
-#         formset_class = self.get_formset_class()
-#         formset = self.get_formset(formset_class)
-#         if form.is_valid() and formset.is_valid():
-#             return self.form_valid(form, formset)
-#         else:
-#             return self.form_invalid(form, formset)
-#
-#     def get_formset_class(self):
-#         return self.formset_class
-#
-#     def get_formset(self, formset_class):
-#         return formset_class(**self.get_formset_kwargs())
-#
-#     def get_formset_kwargs(self):
-#         kwargs = {
-#             'instance': self.object
-#         }
-#         if self.request.method in ('POST', 'PUT'):
-#             kwargs.update({
-#                 'data': self.request.POST,
-#                 'files': self.request.FILES,
-#             })
-#         return kwargs
-#
-#     def form_valid(self, form, formset):
-#         self.object = form.save()
-#         formset.instance = self.object
-#         formset.save()
-#         return redirect(self.object.get_absolute_url())
-#
-#     def form_invalid(self, form, formset):
-#         return self.render_to_response(self.get_context_data(form=form, formset=formset))
-#
-#
-# class ProfissoesPessoaCreateView(FormsetMixin, CreateView):
-#     template_name = 'sosmypc/person_and_professions_form.html'
-#     model = ProfissoesPessoa
-#     form_class = ProfissoesPessoaForm
-#     formset_class = QualificacaoProfissoesPessoaFormSet
-#
-#
-# class ProfissoesPessoaUpdateView(FormsetMixin, UpdateView):
-#     template_name = 'books/author_and_books_form.html'
-#     is_update_view = True
-#     model = ProfissoesPessoa
-#     form_class = ProfissoesPessoaForm
-#     formset_class = QualificacaoProfissoesPessoaFormSet
-#
-#
-# class QualificacaoProfissoesPessoaList(ListView):
-#
-#     model = QualificacaoProfissoesPessoa
-#
-#
-# class QualificacaoProfissoesPessoaDetail(DetailView):
-#
-#     model = QualificacaoProfissoesPessoa
-#
-#
-# class ProfissoesPessoaList(ListView):
-#
-#     model = ProfissoesPessoa
-#
-#
-# class ProfissoesPessoaDetail(DetailView):
-#
-#     model = ProfissoesPessoa
-
-#----------------------------------------------------------------------------------------------------------------------
-#Classes utilizadas para formulários InlinrFormset
-# def submit_recipe(request):
-#     if request.POST:
-#
-#         form = UserSubmittedRecipeForm(request.POST)
-#         if form.is_valid():
-#             recipe = form.save(commit=False)
-#             ingredient_formset = IngredientFormSet(request.POST, instance=recipe)
-#             if ingredient_formset.is_valid():
-#                 recipe.save()
-#                 ingredient_formset.save()
-#                 return HttpResponseRedirect(reverse('recipes_submit_posted'))
-#     else:
-#         form = UserSubmittedRecipeForm()
-#         ingredient_formset = IngredientFormSet(instance=Recipe())
-#     return render_to_response('sosmypc/person_and_professions_form.html', {
-#         "form": form,
-#         "ingredient_formset": ingredient_formset,
-#     }, context_instance=RequestContext(request))
-
-# def profissoesPessoa(request):
-#     profissoes_pessoa = ProfissoesPessoa()
-#     qualificacao_profissao_pessoa_formset = inlineformset_factory(ProfissoesPessoa, QualificacaoProfissoesPessoa, form=QualificacaoProfissoesPessoaForm,fields='__all__', extra=1, can_delete=False,
-#                                                min_num=1, validate_min=True)
-#
-#     if request.method == 'POST':
-#         forms = ProfissoesPessoaForm(request.POST, request.FILES, instance=profissoes_pessoa, prefix='main')
-#         formset = qualificacao_profissao_pessoa_formset(request.POST, request.FILES, instance=profissoes_pessoa, prefix='qualificacao')
-#
-#         if forms.is_valid() and formset.is_valid():
-#             forms = forms.save(commit=False)
-#             forms.save()
-#             formset.save()
-#             return HttpResponseRedirect('/person_and_professions.html')
-#
-#     else:
-#         forms = ProfissoesPessoaForm(instance=profissoes_pessoa, prefix='profissoes')
-#         formset = qualificacao_profissao_pessoa_formset(instance=profissoes_pessoa, prefix='qualificacao')
-#
-#     context = {
-#         'forms': forms,
-#         'formset': formset,
-#     }
-#
-#     return render(request, 'sosmypc/person_and_professions.html', context)
-
-
-
 #-----------------------------------------------------------------------------------------------------------------------
 class ItemInline(extra_views.InlineFormSet):
     model = QualificacaoProfissoesPessoa
@@ -334,25 +187,16 @@ class NewProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
     print('Chegou na linha 334')
 
     layout = Layout(
-        Row('pessoa','profissao', 'rating'),
-        # Fieldset('Address',
-        #          Row(Span7('address'), Span5('zipcode')),
-        #          Row(Span5('city'), Span2('state'), Span5('country'))),
+        Row('profissao', 'rating'),
         Inline('Qualificações da Profissão', ItemInline),
     )
-    print('Chegou na linha 343')
+    print('Chegou na linha 340')
 
-    # def forms_valid(self, form, inlines):
-    #     form.instance.profissoes.pessoa = self.request.user
-    #     return super(NewProfissoesPessoaView, self).forms_valid(form, inlines)
-
-
-    # def forms_valid(self, form):
-    #     print('Chegou na linha 343')
-    #     profissao = self.object.save(commit=False)
-    #     profissao.pessoa = self.request.user.pk
-    #     profissao.save()
-    #     print('Chegou na linha 350')
+    def forms_valid(self, form, inlines):
+        self.object = form.save(commit=False)
+        self.object.pessoa_id = self.request.user.id
+        self.object.save()
+        return super(NewProfissoesPessoaView, self).forms_valid(form, inlines)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -364,38 +208,10 @@ class UpdateProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
     title = "Nova Profissão"
     model = ProfissoesPessoa
     layout = Layout(
-        Row('pessoa', 'profissao', 'rating'),
-        # Fieldset('Address',
-        #          Row(Span7('address'), Span5('zipcode')),
-        #          Row(Span5('city'), Span2('state'), Span5('country'))),
+        Row('profissao', 'rating'),
+
         Inline('Qualificações da Profissão', ItemInline),
     )
 
     def get_success_url(self):
         return self.object.get_absolute_url()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
