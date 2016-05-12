@@ -74,7 +74,7 @@ class ProfissaoForm(forms.Form):#Atualmente sem uso.
 class ProfissoesPessoaForm(forms.Form): #Atualmente sem uso.
     pessoa = forms.CharField(max_length=30,label="Pessoa")
     profissao = forms.CharField(max_length=30,label="Profissao")
-    rating = forms.IntegerField(max_length=30,label="Rating")
+    rating = forms.IntegerField(label="Rating")
 
 
 
