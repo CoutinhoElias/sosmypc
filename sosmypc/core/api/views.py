@@ -9,6 +9,17 @@ from sosmypc.core.api import serializers
 from sosmypc.core.api.serializers import PessoaSerializer, UserSerializer, ProfissoesPessoaSerializer, \
     QualificacaoProfissoesPessoaSerializer
 from sosmypc.core.models import Pessoa, ProfissoesPessoa
+from rest_framework import viewsets
+
+class PessoaViewset(viewsets.ModelViewSet):
+    serializer_class = PessoaSerializer
+    queryset = Pessoa.objects.all()
+    lookup_field = 'id'
+
+#pessoa_list = PessoaViewset.as_view({'get':'list'})
+#pessoa_detail = PessoaViewset.as_view({'get':'retrieve'})
+
+
 
 # #-----------------------------------------------------------------------------------------
 # #Generics class based views

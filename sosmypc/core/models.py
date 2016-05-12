@@ -7,18 +7,14 @@ from django.shortcuts import resolve_url as r
 from django.db import models
 
 
-# class Sample(Module):
-#     icon = 'mdi-image-compare'
-
-
-class Pessoa(models.Model):# TA FEITO
+class Pessoa(models.Model):#<<<==== Testenado com 'django_tables2' no installed apps
     username = models.OneToOneField(User, blank=True, null=True, related_name='pessoa') #"%(class)s_related"
     nomepessoa = models.CharField('Nome', max_length=100, null=False, blank=False)
     sobrenomepessoa = models.CharField('Sobrenome', max_length=100, null=False, blank=False)
     cep = models.CharField('Cep', max_length=10, null=True, blank=False)
     tipologradouro = models.CharField('Tipo Logradouro', max_length=100, null=False, blank=False)
     logradouro = models.CharField('Logradouro', max_length=100)
-    numero = models.IntegerField('Número', null=False, blank=False)
+    numero = models.CharField('Número', max_length=10, null=False, blank=False)
     bairro = models.CharField('Bairro', max_length=50, null=False, blank=False)
     cidade = models.CharField('Cidade', max_length=50, null=False, blank=False)
     estado = models.CharField('estado', max_length=10, null=False, blank=False)

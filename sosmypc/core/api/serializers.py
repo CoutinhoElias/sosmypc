@@ -3,8 +3,8 @@ from rest_framework import serializers
 
 
 from sosmypc.core.models import Pessoa, Profissao, ProfissoesPessoa
-
-
+#serializers.ModelSerializer
+#serializers.RelatedField
 class UserSerializer(serializers.ModelSerializer):
     pessoa = serializers.StringRelatedField()#Resolvido, não modificar Obs: Só pode ser many=True se tiver relacionado User com Pessoa
 

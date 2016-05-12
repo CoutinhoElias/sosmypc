@@ -30,7 +30,7 @@ class RegistrationForm(forms.Form, UserCreationForm):
 
     #last_name = forms.CharField(required=True, label='Último nome')
     #gender = forms.ChoiceField(choices=((None, ''), ('F', 'Feminino'), ('M', 'Masculino'), ('O', 'Outro')),label='Gênero',required=False)
-    profissional = forms.BooleanField(required=False, label='Sou profissional')
+    profissional = forms.BooleanField(required=False, label='Sou profissional.')
     agree_toc = forms.BooleanField(required=True, label='Eu aceito os termos e condições de uso.')
 
     layout = Layout(
@@ -66,42 +66,18 @@ class UserForm(forms.Form):
     is_staff = forms.BooleanField(label="É usuário do sistema?", initial=False)
     is_superuser = forms.BooleanField(label="É Administrador do sistema?", initial=False)
 
-class ProfissaoForm(forms.Form):
+
+class ProfissaoForm(forms.Form):#Atualmente sem uso.
     profissao = forms.CharField(max_length=30,label="Profissao")
 
 
+class ProfissoesPessoaForm(forms.Form): #Atualmente sem uso.
+    pessoa = forms.CharField(max_length=30,label="Pessoa")
+    profissao = forms.CharField(max_length=30,label="Profissao")
+    rating = forms.IntegerField(max_length=30,label="Rating")
 
 
 
-
-# class ProfissoesPessoaForm(forms.Form):
-#     class QualificacaoProfissoesPessoaForm(forms.Form):
-#         name = forms.CharField()
-#         relationship = forms.ChoiceField(choices=(
-#             ('SPS', 'Spouse'), ('PRT', 'Partner'),
-#             ('FRD', 'Friend'), ('CLG', 'Colleague')))
-#         daytime_phone = forms.CharField()
-#         evening_phone = forms.CharField(required=False)
-#
-#     registration_date = forms.DateField(initial=datetime.date.today)
-#     full_name = forms.CharField()
-#     birth_date = forms.DateField()
-#     height = forms.IntegerField(help_text='cm')
-#     weight = forms.IntegerField(help_text='kg')
-#     primary_care_physician = forms.CharField()
-#     date_of_last_appointment = forms.DateField()
-#     home_phone = forms.CharField()
-#     work_phone = forms.CharField(required=False)
-#
-#
-#
-#     emergency_contacts = FormSetField(formset_factory(QualificacaoProfissoesPessoaForm, extra=2, can_delete=True))
-#
-#     layout = Layout(Row(Column('full_name', 'birth_date',
-#                                Row('height', 'weight'), span_columns=3), 'registration_date'),
-#                     Row(Span3('primary_care_physician'), 'date_of_last_appointment'),
-#                     Row('home_phone', 'work_phone'),
-#                     Fieldset('Emergence Numbers', 'QualificacaoProfissoesPessoaForm'))
 
 """Passos para trabalhar com django rest
 

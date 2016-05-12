@@ -1,27 +1,37 @@
-import request as request
-import self as self
-from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
-from django.shortcuts import render
+import extra_views
+import json
+import urllib
 
+from django.template.loader import render_to_string
+from django.views.generic import UpdateView, ListView
+from django.views.generic.edit import CreateView
+from django.core.urlresolvers import reverse_lazy
+
+from braces.views import LoginRequiredMixin
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from material import LayoutMixin, Layout, Inline, Row
+#---
 from sosmypc import settings
 from sosmypc.core.forms import CommentForm, RegistrationForm
+from sosmypc.core.models import Pessoa
 from sosmypc.core.models import ProfissoesPessoa, QualificacaoProfissoesPessoa, Profissao
 from sosmypc.settings import LOGIN_URL
+from django.shortcuts import resolve_url
 
-import extra_views
-from material import LayoutMixin, Layout, Fieldset, Inline, Row, Span2, Span5, Span7
-from braces.views import LoginRequiredMixin
+#from .tables  import PessoaTable
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.views.generic import TemplateView
+#from django_tables2 import RequestConfig
+# Your write the four classes imported below
+# (and pick a better location)
 
-from django.contrib.auth.decorators import login_required
-from sosmypc.core.models import Pessoa
-import urllib, json
+#from django_tables2 import SingleTableView
 
-# Create your views here.....
 
-#import pdb; pdb.set_trace()
 def rest(request):
     pessoas = Pessoa.objects.all()
 
@@ -56,7 +66,14 @@ def index_html(request):
     return render(request,'index.html',{'form':form})
 
 #----------------------------------------------------------------------------------------------------------------------
-#Funções utilizadas para Autenticação e validação.
+#Função utilizada para chamar página dashboard
+@login_required(login_url=LOGIN_URL)
+def success(request):
+    #form = CommentForm()
+    return render(request,'dash.html')
+
+#----------------------------------------------------------------------------------------------------------------------
+#Funções utilizadas para Autenticação e validação quandonão se usar o Mixin.
 def login(request):
     next = request.GET.get('next', '/home/')
     if request.method == "POST":
@@ -92,11 +109,16 @@ def lista_profissoes(request):
 #Função utilizada para listar profissões da pessoa que está logada
 @login_required(login_url=LOGIN_URL)
 def lista_profissoespessoa(request):
-    profissoespessoa = ProfissoesPessoa.objects.filter(pessoa__username=request.user)
+    #profissoespessoa = ProfissoesPessoa.objects.filter(pessoa__username=request.user)#<<<<====correto com filtro
+    profissoespessoa = ProfissoesPessoa.objects.all()
 
-    return render(request,'sosmypc/person_and_professions.html',{'profissoespessoa':profissoespessoa})
-
-
+    return render(request,'sosmypc/person_and_professions_list.html',{'profissoespessoa':profissoespessoa})
+#----------------------------------------------------------------------------------------------------------------------
+#Profissoes list Teste para uso em Modal
+class CreateMyModelView(CreateView):
+    model = ProfissoesPessoa
+    template_name = 'sosmypc/person_and_professions_list.html'
+    #success_url = reverse_lazy("create_mymodel_success")
 #----------------------------------------------------------------------------------------------------------------------
 #Função utilizada para inserir uma pessoa e user relacionados
 def register_html(request):
@@ -136,19 +158,16 @@ def register_html(request):
                                               cidade=cidade, estado=estado,
                                               longitude=longitude,latitude=latitude)
 
-            return render(request, 'registration.html',
-                          {
-                              'form': RegistrationForm(),
-                          })
+            return  HttpResponseRedirect(resolve_url('dashboard'))
+            # return render(request, 'registration.html',
+            #               {
+            #                   'form': RegistrationForm(),
+            #               })
         else:
             return render(request, 'registration.html',
                           {'form': form})
-
-
-
     else:
         form = RegistrationForm()
-
     return render(request,'registration.html',{'form':form})
 
 
@@ -177,6 +196,7 @@ class ItemInline(extra_views.InlineFormSet):
     extra = 1# Define aquantidade de linhas a apresentar.
 
 
+
 #LoginRequiredMixin faz a mesma função de @login_required(login_url=LOGIN_URL). a ndiferença que LoginRequiredMixin não precisa apontar na url
 class NewProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
                       extra_views.NamedFormsetsMixin,
@@ -184,13 +204,13 @@ class NewProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
     title = "Nova Profissão"
     model = ProfissoesPessoa
 
-    print('Chegou na linha 334')
+    #print('Chegou na linha 334')
 
     layout = Layout(
         Row('profissao', 'rating'),
         Inline('Qualificações da Profissão', ItemInline),
     )
-    print('Chegou na linha 340')
+    #print('Chegou na linha 340')
 
     def forms_valid(self, form, inlines):
         self.object = form.save(commit=False)
@@ -215,3 +235,65 @@ class UpdateProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
 
     def get_success_url(self):
         return self.object.get_absolute_url()
+
+
+#----------------------------------------------------------------------------------------------------------------
+def people(request): #<<<=== Vai listar informações de pessoas
+    table = PessoaTable(Pessoa.objects.all())
+    RequestConfig(request).configure(table)
+    return render(request, "sosmypc/people.html", {"people": Pessoa.objects.all()})
+    #return render(request, "sosmypc/people.html", {"people": Pessoa.objects.filter(username=request.user)})<<<====Opção para usar filtro de usuario
+
+
+    # profissoespessoa = ProfissoesPessoa.objects.filter(pessoa__username=request.user)
+    #
+    # return render(request,'sosmypc/people.html',{'profissoespessoa':profissoespessoa})
+#
+#
+# class FooTableView(TemplateView):
+#     template_name = 'app/foo_table.html'
+#
+#     def get_queryset(self, **kwargs):
+#         return Foo.objects.all()
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(FooTableView, self).get_context_data(**kwargs)
+#         filter = FooFilter(self.request.GET, queryset=self.get_queryset(**kwargs))
+#         filter.form.helper = FooFilterFormHelper()
+#         table = FooTable(filter.qs)
+#         RequestConfig(self.request).configure(table)
+#         context['filter'] = filter
+#         context['table'] = table
+#         return context
+#
+#
+# class PagedFilteredTableView(SingleTableView):
+#     filter_class = None
+#     formhelper_class = None
+#     context_filter_name = 'filter'
+#
+#     def get_queryset(self, **kwargs):
+#         qs = super(PagedFilteredTableView, self).get_queryset()
+#         self.filter = self.filter_class(self.request.GET, queryset=qs)
+#         self.filter.form.helper = self.formhelper_class()
+#         return self.filter.qs
+#
+#     def get_table(self, **kwargs):
+#         table = super(PagedFilteredTableView, self).get_table()
+#         RequestConfig(self.request, paginate={'page': self.kwargs['page'],
+#                             "per_page": self.paginate_by}).configure(table)
+#         return table
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(PagedFilteredTableView, self).get_context_data()
+#         context[self.context_filter_name] = self.filter
+#         return context
+#
+#
+# class FooTableView(PagedFilteredTableView):
+#     model = Pessoa
+#     table_class = ProfissoesPessoa
+#     template_name = 'app/foo_table.html'
+#     paginate_by = 50
+#     filter_class = Profissao
+#     formhelper_class = QualificacaoProfissoesPessoa

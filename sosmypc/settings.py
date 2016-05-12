@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'rest_framework',
+    #'django_tables2',#<<<=====Testando django-table2
     'sosmypc.core',
     'sosmypc.core.api',
     'sosmypc.financeiro',
@@ -76,6 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                #'django.core.context_processors.request',#<<<===== Testando django-table2
             ],
         },
     },
