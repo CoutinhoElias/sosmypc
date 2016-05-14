@@ -1,35 +1,23 @@
 import extra_views
 import json
 import urllib
-
-from django.template.loader import render_to_string
-from django.views.generic import UpdateView, ListView
-from django.views.generic.edit import CreateView
-from django.core.urlresolvers import reverse_lazy
-
 from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.views.generic.edit import CreateView
 from material import LayoutMixin, Layout, Inline, Row
+
 #---
 from sosmypc import settings
-from sosmypc.core.forms import CommentForm, RegistrationForm
+from sosmypc.core.forms import CommentForm, RegistrationForm, ProfissoesPessoaForm
 from sosmypc.core.models import Pessoa
 from sosmypc.core.models import ProfissoesPessoa, QualificacaoProfissoesPessoa, Profissao
 from sosmypc.settings import LOGIN_URL
 from django.shortcuts import resolve_url
-
-#from .tables  import PessoaTable
-
-from django.views.generic import TemplateView
-#from django_tables2 import RequestConfig
-# Your write the four classes imported below
-# (and pick a better location)
-
-#from django_tables2 import SingleTableView
+from django.contrib.messages.views import SuccessMessageMixin
 
 
 def rest(request):
@@ -113,12 +101,7 @@ def lista_profissoespessoa(request):
     profissoespessoa = ProfissoesPessoa.objects.all()
 
     return render(request,'sosmypc/person_and_professions_list.html',{'profissoespessoa':profissoespessoa})
-#----------------------------------------------------------------------------------------------------------------------
-#Profissoes list Teste para uso em Modal
-class CreateMyModelView(CreateView):
-    model = ProfissoesPessoa
-    template_name = 'sosmypc/person_and_professions_list.html'
-    #success_url = reverse_lazy("create_mymodel_success")
+
 #----------------------------------------------------------------------------------------------------------------------
 #Função utilizada para inserir uma pessoa e user relacionados
 def register_html(request):
@@ -225,7 +208,7 @@ class NewProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
 class UpdateProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
                       extra_views.NamedFormsetsMixin,
                       extra_views.UpdateWithInlinesView):
-    title = "Nova Profissão"
+    title = "Atualizando Profissões"
     model = ProfissoesPessoa
     layout = Layout(
         Row('profissao', 'rating'),
@@ -236,64 +219,40 @@ class UpdateProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
     def get_success_url(self):
         return self.object.get_absolute_url()
 
+#-------------------------------------------------------------------------------------------------------
+class AjaxTemplateMixin(object):
 
-#----------------------------------------------------------------------------------------------------------------
-def people(request): #<<<=== Vai listar informações de pessoas
-    table = PessoaTable(Pessoa.objects.all())
-    RequestConfig(request).configure(table)
-    return render(request, "sosmypc/people.html", {"people": Pessoa.objects.all()})
-    #return render(request, "sosmypc/people.html", {"people": Pessoa.objects.filter(username=request.user)})<<<====Opção para usar filtro de usuario
+    def dispatch(self, request, *args, **kwargs):
+        if not hasattr(self, 'ajax_template_name'):
+            split = self.template_name.split('.html')
+            split[-1] = '_inner'
+            split.append('.html')
+            self.ajax_template_name = ''.join(split)
+        if request.is_ajax():
+            self.template_name = self.ajax_template_name
+        return super(AjaxTemplateMixin, self).dispatch(request, *args, **kwargs)
 
 
-    # profissoespessoa = ProfissoesPessoa.objects.filter(pessoa__username=request.user)
-    #
-    # return render(request,'sosmypc/people.html',{'profissoespessoa':profissoespessoa})
-#
-#
-# class FooTableView(TemplateView):
-#     template_name = 'app/foo_table.html'
-#
-#     def get_queryset(self, **kwargs):
-#         return Foo.objects.all()
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(FooTableView, self).get_context_data(**kwargs)
-#         filter = FooFilter(self.request.GET, queryset=self.get_queryset(**kwargs))
-#         filter.form.helper = FooFilterFormHelper()
-#         table = FooTable(filter.qs)
-#         RequestConfig(self.request).configure(table)
-#         context['filter'] = filter
-#         context['table'] = table
-#         return context
-#
-#
-# class PagedFilteredTableView(SingleTableView):
-#     filter_class = None
-#     formhelper_class = None
-#     context_filter_name = 'filter'
-#
-#     def get_queryset(self, **kwargs):
-#         qs = super(PagedFilteredTableView, self).get_queryset()
-#         self.filter = self.filter_class(self.request.GET, queryset=qs)
-#         self.filter.form.helper = self.formhelper_class()
-#         return self.filter.qs
-#
-#     def get_table(self, **kwargs):
-#         table = super(PagedFilteredTableView, self).get_table()
-#         RequestConfig(self.request, paginate={'page': self.kwargs['page'],
-#                             "per_page": self.paginate_by}).configure(table)
-#         return table
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(PagedFilteredTableView, self).get_context_data()
-#         context[self.context_filter_name] = self.filter
-#         return context
-#
-#
-# class FooTableView(PagedFilteredTableView):
-#     model = Pessoa
-#     table_class = ProfissoesPessoa
-#     template_name = 'app/foo_table.html'
-#     paginate_by = 50
-#     filter_class = Profissao
-#     formhelper_class = QualificacaoProfissoesPessoa
+class ProfissoesPessoaView(LoginRequiredMixin,
+                           SuccessMessageMixin,
+                           AjaxTemplateMixin, LayoutMixin,
+                           extra_views.NamedFormsetsMixin,
+                           extra_views.CreateWithInlinesView):
+    title = "Nova Profissão"
+    model = ProfissoesPessoa
+
+    #print('Chegou na linha 334')
+
+    layout = Layout(
+        Row('profissao', 'rating'),
+    )
+    #print('Chegou na linha 340')
+
+    def forms_valid(self, form, inlines):
+        self.object = form.save(commit=False)
+        self.object.pessoa_id = self.request.user.id
+        self.object.save()
+        #return super(ProfissoesPessoaView, self).forms_valid(form, inlines)
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()

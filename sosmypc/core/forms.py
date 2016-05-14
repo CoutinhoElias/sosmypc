@@ -2,11 +2,10 @@ import datetime as datetime
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from material import Layout, Row, Fieldset, Span3, Span2, Span10, Span8, Span7, Span5
-from django.forms.formsets import formset_factory
 
-from sosmypc.core.models import Pessoa
-from sosmypc.core.static.material import FormSetField, Column
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=30,label="Nome")
@@ -76,7 +75,14 @@ class ProfissoesPessoaForm(forms.Form): #Atualmente sem uso.
     profissao = forms.CharField(max_length=30,label="Profissao")
     rating = forms.IntegerField(label="Rating")
 
-
+    @property #Trabalhando com modal | Primeiro declara esta função abaixo:
+    def helper(self):
+        helper = FormHelper()
+        helper.form_tag = False # don't render form DOM element
+        helper.render_unmentioned_fields = True # render all fields
+        helper.label_class = 'col-md-2'
+        helper.field_class = 'col-md-10'
+        return helper
 
 
 """Passos para trabalhar com django rest

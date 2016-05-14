@@ -2,7 +2,7 @@ from django.views import generic
 from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
 from sosmypc.core import forms
-from sosmypc.core.views import people
+
 from . import views
 
 urls_profissoes =[
@@ -18,5 +18,5 @@ urlpatterns = [
     #url('^profissoes/$', views.NewProfissoesPessoaView.as_view(template_name="person_and_professions.html"),name="profissoes"),
     url(r'^profissoes/', include(urls_profissoes,namespace="profissoes")),
     # url(r'^people2/$',views.FooTableView,name='pessoas333'),
-     url(r'^people/$', people),
+
 ]

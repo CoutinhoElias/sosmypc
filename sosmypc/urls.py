@@ -5,7 +5,6 @@ from django.contrib import admin
 from sosmypc.core import views
 from django.contrib.auth.decorators import login_required
 
-from sosmypc.core.views import CreateMyModelView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -18,7 +17,7 @@ urlpatterns = [
     #url(r'^listaprofissoes/$', login_required(views.lista_profissoes)),
     url(r'^profissoespessoa/$', login_required(views.lista_profissoespessoa)),
 
-    url(r'^create/', CreateMyModelView.as_view(), name='create_mymodel_form'),
+
     #url(r'^congratulations/', TemplateView.as_view(template_name="myapp/create_mymodel_success.html"), name='create_mymodel_success'),
 
 
