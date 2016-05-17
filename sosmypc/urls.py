@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^site/', include('sosmypc.core.urls')),
     #url(r'^listaprofissoes/$', login_required(views.lista_profissoes)),
     url(r'^profissoespessoa/$', login_required(views.lista_profissoespessoa)),
+    url(r'^registro1/$',views.ProfissoesPessoa_View(),name='registro1'),
 
 
     #url(r'^congratulations/', TemplateView.as_view(template_name="myapp/create_mymodel_success.html"), name='create_mymodel_success'),

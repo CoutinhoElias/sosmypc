@@ -39,19 +39,30 @@
             <div class="card">
 
 
+
+
                <!-- Modal Trigger -->
                <a class="modal-trigger waves-effect waves-light btn" href="#modal1">Modal</a>
 
-               <!-- Modal Structure -->
-               <div id="modal1" class="modal modal-fixed-footer">
-                 <div class="modal-content">
-                   <h4>Inserindo profissões da Pessoa.</h4>
-                   <p>A bunch of text</p>
-                 </div>
-                 <div class="modal-footer">
-                   <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Agree</a>
-                 </div>
-               </div>
+                <form method="post" action="{% url 'registro1' %}">{% csrf_token %}
+                   <!-- Modal Structure -->
+                   <div id="modal1" class="modal modal-fixed-footer">
+                     <div class="modal-content">
+                       <h4>Inserindo profissões da Pessoa.</h4>
+                       <p>A bunch of text</p>
+                         {% form %}
+
+                        {% endform %}
+                     </div>
+                     <div class="modal-footer">
+                       <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Agree</a>
+                     </div>
+                   </div>
+                </form>
+
+
+
+
 
                 <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp mdl-data-table__cell--non-numeric" tastyle="width:100%">
                     <thead>
@@ -97,34 +108,13 @@
 
 
 <script>
-  var formAjaxSubmit = function(form, modal) {
-    $(form).submit(function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            success: function (xhr, ajaxOptions, thrownError) {
-                if ( $(xhr).find('.has-error').length > 0 ) {
-                    $(modal).find('.modal-body').html(xhr);
-                    formAjaxSubmit(form, modal);
-                } else {
-                    $(modal).modal('toggle');
-                }
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-            }
-        });
-    });
-  }
+
   $('.modal-trigger').leanModal({
       dismissible: true, // Modal can be dismissed by clicking outside of the modal
       opacity: .5, // Opacity of modal background
       in_duration: 300, // Transition in duration
       out_duration: 200, // Transition out duration
 
-      $('#form-modal').modal('toggle');
-      formAjaxSubmit('#form-modal-body form', '#form-modal');
     }
   );
 </script>

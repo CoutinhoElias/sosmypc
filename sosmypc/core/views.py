@@ -220,39 +220,30 @@ class UpdateProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
         return self.object.get_absolute_url()
 
 #-------------------------------------------------------------------------------------------------------
-class AjaxTemplateMixin(object):
-
-    def dispatch(self, request, *args, **kwargs):
-        if not hasattr(self, 'ajax_template_name'):
-            split = self.template_name.split('.html')
-            split[-1] = '_inner'
-            split.append('.html')
-            self.ajax_template_name = ''.join(split)
-        if request.is_ajax():
-            self.template_name = self.ajax_template_name
-        return super(AjaxTemplateMixin, self).dispatch(request, *args, **kwargs)
+#Função utilizada para inserir uma pessoa e user relacionados
+def ProfissoesPessoa_View(request):
+    if request.method=='POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
 
 
-class ProfissoesPessoaView(LoginRequiredMixin,
-                           SuccessMessageMixin,
-                           AjaxTemplateMixin, LayoutMixin,
-                           extra_views.NamedFormsetsMixin,
-                           extra_views.CreateWithInlinesView):
-    title = "Nova Profissão"
-    model = ProfissoesPessoa
+            pessoa = request.POST['pessoa']
+            profissao = request.POST['profissao']
+            rating = request.POST['rating']
 
-    #print('Chegou na linha 334')
 
-    layout = Layout(
-        Row('profissao', 'rating'),
-    )
-    #print('Chegou na linha 340')
 
-    def forms_valid(self, form, inlines):
-        self.object = form.save(commit=False)
-        self.object.pessoa_id = self.request.user.id
-        self.object.save()
-        #return super(ProfissoesPessoaView, self).forms_valid(form, inlines)
+            profissaopessoa = ProfissoesPessoa.objects.create(pessoa=pessoa,
+                                              profissao=profissao,   rating=rating)
 
-    def get_success_url(self):
-        return self.object.get_absolute_url()
+            return  HttpResponseRedirect(resolve_url('dashboard'))
+
+        else:
+            return render(request, 'person_and_professions_list.html',
+                          {'form': form})
+    else:
+        form = RegistrationForm()
+
+    return render(request,'person_and_professions_list.html',{'form':form})
+
+

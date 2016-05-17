@@ -44,14 +44,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'crispy_forms',
+    'crispy_forms',#<<<====Tentando CRUDcom modal.
     'rest_framework',
-    #'django_tables2',#<<<=====Testando django-table2
     'sosmypc.core',
     'sosmypc.core.api',
     'sosmypc.financeiro',
 ]
 
+CRISPY_TEMPLATE_PACK = 'materialize' #<<<====Tentando CRUDcom modal.
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
