@@ -15,8 +15,9 @@ urlpatterns = [
     #url(r'^profissoes/', include('sosmypc.core.urls', namespace="profissoes")),
     url(r'^site/', include('sosmypc.core.urls')),
     #url(r'^listaprofissoes/$', login_required(views.lista_profissoes)),
-    url(r'^profissoespessoa/$', login_required(views.lista_profissoespessoa)),
-    url(r'^registro1/$',views.ProfissoesPessoa_View(),name='registro1'),
+    url(r'^profissoespessoa/$', login_required(views.lista_profissoespessoa), name='profissoespessoa-list'),
+    url(r'^registro1/$',views.ProfissoesPessoa_View,name='registro1'),
+    url(r'^cadastrar-profissao-pessoa/$', views.ProfissoesPessoaCreateView.as_view(), name='cadastrar-profissao-pessoa'),
 
 
     #url(r'^congratulations/', TemplateView.as_view(template_name="myapp/create_mymodel_success.html"), name='create_mymodel_success'),

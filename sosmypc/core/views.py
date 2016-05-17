@@ -4,15 +4,17 @@ import urllib
 from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.views.generic.edit import CreateView
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.views import generic
+from django.views.generic.edit import BaseCreateView
 from material import LayoutMixin, Layout, Inline, Row
 
 #---
 from sosmypc import settings
-from sosmypc.core.forms import CommentForm, RegistrationForm, ProfissoesPessoaForm
+from sosmypc.core.forms import CommentForm, RegistrationForm, ProfissoesPessoaForm, ProfissoesPessoaModelForm
 from sosmypc.core.models import Pessoa
 from sosmypc.core.models import ProfissoesPessoa, QualificacaoProfissoesPessoa, Profissao
 from sosmypc.settings import LOGIN_URL
@@ -100,7 +102,9 @@ def lista_profissoespessoa(request):
     #profissoespessoa = ProfissoesPessoa.objects.filter(pessoa__username=request.user)#<<<<====correto com filtro
     profissoespessoa = ProfissoesPessoa.objects.all()
 
-    return render(request,'sosmypc/person_and_professions_list.html',{'profissoespessoa':profissoespessoa})
+    form_profissoespessoa = ProfissoesPessoaModelForm(initial={'pessoa': request.user.pessoa})
+
+    return render(request,'sosmypc/person_and_professions_list.html',{'profissoespessoa':profissoespessoa, 'form': form_profissoespessoa})
 
 #----------------------------------------------------------------------------------------------------------------------
 #Função utilizada para inserir uma pessoa e user relacionados
@@ -247,3 +251,11 @@ def ProfissoesPessoa_View(request):
     return render(request,'person_and_professions_list.html',{'form':form})
 
 
+
+# usei BaseCreateView porque estava com preguica de fazer um template para renderizar essa view, ou seja, essa sera uma view so de processamento
+# vc vai poder fazer um post para ela.
+# class ProfissoesPessoaCreateView(generic.CreateView):
+class ProfissoesPessoaCreateView(BaseCreateView):
+    model = ProfissoesPessoa
+    form_class = ProfissoesPessoaModelForm
+    success_url = reverse_lazy('profissoespessoa-list')

@@ -7,6 +7,9 @@ from material import Layout, Row, Fieldset, Span3, Span2, Span10, Span8, Span7, 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 
+from .models import ProfissoesPessoa
+
+
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=30,label="Nome")
     email = forms.EmailField(label="E-mail")
@@ -84,6 +87,11 @@ class ProfissoesPessoaForm(forms.Form): #Atualmente sem uso.
         helper.field_class = 'col-md-10'
         return helper
 
+
+class ProfissoesPessoaModelForm(forms.ModelForm):
+    class Meta:
+        model = ProfissoesPessoa
+        fields = '__all__'
 
 """Passos para trabalhar com django rest
 
