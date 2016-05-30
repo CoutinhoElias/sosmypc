@@ -1,0 +1,14 @@
+{% load i18n %}
+
+{% block titulo %}{{ conta }} - {{ block.super }}{% endblock %}
+{% block h1 %}{{ conta }}{% endblock %}
+
+{% block conteudo %}
+<ul>
+  <li>Valor: {{ conta.valor }}</li>
+  <li>Vencimento: {{ conta.data_vencimento }}</li>
+  <li>Pessoa: {{ conta.pessoa }}</li>
+  <li>Histórico: {{ conta.historico }}</li>
+  <li>Status: {{ conta.status }}</li>
+</ul>
+{% endblock conteudo %}

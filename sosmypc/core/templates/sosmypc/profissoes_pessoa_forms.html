@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %} Cadastrar Profissões da Pessoa {% endblock title %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" class="viewform">{% csrf_token %}
+    <div class="card-content">
+        {{ form.as_p }}
+    </div>
+    <div class="card-action">
+        <div class="right-align">
+            <button class="waves-effect waves-light btn" type="submit">Cadastrar</button>
+        </div>
+    </div>
+</form>
+{% endblock content %}

@@ -1,0 +1,93 @@
+{% load staticfiles %}
+{% load material_form %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Suas Profissões</title>
+
+    <link href="{% static "/static/material/css/materialize.css" %}" rel="stylesheet">
+    <link href="{% static "/static/material/css/jquery.datetimepicker.css" %}" rel="stylesheet">
+    <link href="{% static "/static/material/css/forms.css" %}" rel="stylesheet">
+
+        <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <style type="text/css">
+      html, body {
+          background: #eee;
+          height: 100%;
+      }
+    </style>
+</head>
+
+<body class="valign-wrapper2">
+<div class="container expand-on-small-only">
+    <div class="row valign change-form">
+        <div class="col s12 m8 offset-m2 l8 offset-l2">
+            <div class="card">
+
+                <ul>
+                  {% for conta in contas_a_pagar %}
+                  <li><a href="{{ conta.get_absolute_url }}">{{ conta }}</a></li>
+                  {% endfor %}
+                </ul>
+
+
+
+                <ul>
+                  {% for conta in contas_a_receber %}
+                  <li><a href="{{ conta.get_absolute_url }}">{{ conta }}</a></li>
+                  {% endfor %}
+                </ul>
+
+
+{#                <table class="table table-striped table-bordered table-hover" tastyle="width:100%">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <td>Id</td>#}
+{#                            <td>Profissao</td>#}
+{#                            <td>Rating</td>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    {% for profissao in profissoespessoa %}#}
+{#                        <tr>#}
+{#                            <td>{{ profissao.id }}</td>#}
+{#                            <td>{{ profissao.profissao }}</td>#}
+{#                            <td>{{ profissao.rating }}</td>#}
+{#                        </tr>#}
+{#                    {% empty %}#}
+{#                        <li>#}
+{#                            Sem registros#}
+{#                        </li>#}
+{#                    {% endfor %}#}
+{#                </table>#}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<script src="{% static "/static/js/cep.js" %}"></script>
+
+<script src="{% static "/static/material/js/jquery.datetimepicker.js" %}"></script>
+<script src="{% static "/static/material/js/jquery.formset.js" %}"></script>
+<script src="{% static "/static/material/js/materialize.js" %}"></script>
+<script src="{% static "/static/material/js/material_init.js" %}"></script>
+<script type="text/javascript">
+    if (navigator.appVersion.indexOf('Win') != -1) {
+        document.write('<link rel="stylesheet" type="text/css" href="/static/material/css/robotofix.css">');
+    }
+</script>
+
+</body>
+</html>

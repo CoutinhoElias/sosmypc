@@ -1,0 +1,75 @@
+{% load staticfiles %}
+{% load material_form %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cadastrar em SOSmyPC</title>
+
+    <link href="{% static "/static/material/css/materialize.css" %}" rel="stylesheet">
+    <link href="{% static "/static/material/css/jquery.datetimepicker.css" %}" rel="stylesheet">
+    <link href="{% static "/static/material/css/forms.css" %}" rel="stylesheet">
+
+{#    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.orange-amber.min.css" />#}
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+
+
+    <style type="text/css">
+      html, body {
+          background: #eee;
+          height: 100%;
+      }
+    </style>
+</head>
+
+<body class="valign-wrapper2">
+<div class="container expand-on-small-only">
+    <div class="row valign change-form">
+        <div class="col s12 m8 offset-m2 l8 offset-l2">
+            <div class="card">
+            <form method="POST" enctype="multipart/form-data" class="viewform">{% csrf_token %}
+                <div class="card-content">
+                    {% form %}
+                        {% part form.username prefix %}<i class="mdi-action-account-box prefix"></i>{% endpart %}
+                        {% part form.email prefix %}<label for="id_email"></label><i class="mdi-communication-email prefix"></i>{% endpart %}
+                        {% part form.password1 prefix %}<i class="mdi-action-lock-open prefix"></i>{% endpart %}
+                        {% part form.password2 prefix %}<i class="mdi-action-lock-open prefix"></i>{% endpart %}
+                    {% endform %}
+                </div>
+                <div class="card-action">
+                    <div class="right-align">
+                        <a class="waves-effect waves-light btn yellow tooltipped" data-position="top" data-tooltip="Página anterior" href="{{ request.META.HTTP_REFERER }}">Cancelar</a>
+                        <button class="waves-effect waves-light tooltipped waves-effect btn" data-position="top" data-tooltip="Efetua o registro" type="submit">Cadastrar</button>
+                    </div>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+<script src="{% static "/static/js/cep.js" %}"></script>
+
+<script src="{% static "/static/material/js/jquery.datetimepicker.js" %}"></script>
+<script src="{% static "/static/material/js/jquery.formset.js" %}"></script>
+<script src="{% static "/static/material/js/materialize.js" %}"></script>
+<script src="{% static "/static/material/js/material_init.js" %}"></script>
+<script type="text/javascript">
+    if (navigator.appVersion.indexOf('Win') != -1) {
+        document.write('<link rel="stylesheet" type="text/css" href="/static/material/css/robotofix.css">');
+    }
+</script>
+
+</body>
+</html>
+

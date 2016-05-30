@@ -1,0 +1,51 @@
+{% comment %}{% extends "admin/base_site.html" %}{% endcomment %}
+{% load static %}
+
+{% block corpo %}
+
+    <div style="display: inline-block; width: 65%; vertical-align:top;">
+        <h2>django-addanother example form</h2>
+
+
+        <form action="" method="post" style="padding: 20px; border: 1px solid #ddd">
+            <table>
+              {{ form.as_table }}
+            </table>
+            {% csrf_token %}
+            <input type="submit" value="Submit" />
+        </form>
+
+        <script type="text/javascript" src="{% static jquery %}"></script>
+        {{ form.media }}
+    </div>
+
+
+    <table>
+        <thead>
+        <tr>
+            <th>
+                Descrição
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+            {% if object_list %}
+                {% for qualificacao in object_list %}
+                    <tr>
+                        <td>
+                            {{ qualificacao.descricao }}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2">
+                        Nenhuma qualificacao cadastrada
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+{% endblock %}
