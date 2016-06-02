@@ -1,7 +1,7 @@
-import extra_views
 import json
-import request as request
 import urllib
+
+import extra_views
 from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
@@ -10,20 +10,17 @@ from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import generic
-from material import LayoutMixin, Layout, Inline, Row
 
 #---
+from material import *
 from sosmypc import settings
-from sosmypc.core import models
 from sosmypc.core.forms import CommentForm, RegistrationForm, ProfissoesPessoaForm, ProfissoesPessoaModelForm
-from sosmypc.core.models import Pessoa, Qualificacao
+from sosmypc.core.models import Pessoa
 from sosmypc.core.models import ProfissoesPessoa, QualificacaoProfissoesPessoa, Profissao
+
 from sosmypc.settings import LOGIN_URL
 from django.shortcuts import resolve_url
-from django.http import HttpResponseBadRequest
 
-
-# from django_addanother.views import PopupMixin
 
 
 def rest(request):
@@ -228,58 +225,58 @@ class UpdateProfissoesPessoaView(LoginRequiredMixin,LayoutMixin,
 
 #-------------------------------------------------------------------------------------------------------
 #Função utilizada para inserir uma pessoa e user relacionados
-# def funcaoProfissoesPessoa(request):
-#     if request.method=='POST':
-#         form = ProfissoesPessoaForm(request.POST)
-#         if form.is_valid():
-#
-#             # pessoa = request.POST['pessoa']
-#             # profissao = request.POST['profissao']
-#             # rating = request.POST['rating']
-#
-#             # form.cleaned_data['pessoa']
-#             # form.cleaned_data['profissao']
-#             # form.cleaned_data['rating']
-#
-#             ProfissoesPessoa.objects.create(form.cleaned_data['pessoa'],
-#                                             form.cleaned_data['profissao'],
-#                                             form.cleaned_data['rating'])
-#
-#             return render(request, 'sosmypc/profissoes_pessoa_forms.html',
-#                           {
-#                               'form': ProfissoesPessoaForm(),
-#                           })
-#             print('Se form for valido<<<=======================')
-#             # return HttpResponseRedirect('/cadastrarprofissaopessoa/')
-#
-#         else:
-#             return render(request, 'sosmypc/profissoes_pessoa_forms.html', {'profissao_pessoa_modal_form':form})
-#             print('Se form for invalido<<<=======================')
-#     else:
-#         form = ProfissoesPessoaForm()
-#         return render(request, 'sosmypc/profissoes_pessoa_forms.html', {'profissao_pessoa_modal_forms':form})
-#         print('Se o metodo não for POST<<<=======================')
+def funcaoProfissoesPessoa(request):
+    if request.method=='POST':
+        form = ProfissoesPessoaForm(request.POST)
+        if form.is_valid():
+
+            # pessoa = request.POST['pessoa']
+            # profissao = request.POST['profissao']
+            # rating = request.POST['rating']
+
+            # form.cleaned_data['pessoa']
+            # form.cleaned_data['profissao']
+            # form.cleaned_data['rating']
+
+            ProfissoesPessoa.objects.create(form.cleaned_data['pessoa'],
+                                            form.cleaned_data['profissao'],
+                                            form.cleaned_data['rating'])
+
+            return render(request, 'sosmypc/profissoes_pessoa_forms.html',
+                          {
+                              'form': ProfissoesPessoaForm(),
+                          })
+            print('Se form for valido<<<=======================')
+            # return HttpResponseRedirect('/cadastrarprofissaopessoa/')
+
+        else:
+            return render(request, 'sosmypc/profissoes_pessoa_forms.html', {'profissao_pessoa_modal_form':form})
+            print('Se form for invalido<<<=======================')
+    else:
+        form = ProfissoesPessoaForm()
+        return render(request, 'sosmypc/profissoes_pessoa_forms.html', {'profissao_pessoa_modal_forms':form})
+        print('Se o metodo não for POST<<<=======================')
 
 
 def pp(request):
     if request.method == 'POST':
-        form = ProfissoesPessoaForm(request.POST)
+        form = ProfissoesPessoaModelForm(request.POST)
 
         if not form.is_valid():
             return render(request, 'sosmypc/profissoes_pessoa_forms.html', {'form':form})
 
-        pessoa = request.POST['pessoa']
-        profissao = request.POST['profissao']
-        rating = request.POST['rating']
+        pessoa = form.cleaned_data.get('pessoa')
+        profissao = form.cleaned_data.get('profissao')
+        rating = form.cleaned_data.get('rating')
 
-        ProfissoesPessoa.objects.create(pessoa=pessoa.user.pessoa,
+        ProfissoesPessoa.objects.create(pessoa=pessoa,
                                         profissao=profissao,
                                         rating=rating)
 
 
         return HttpResponseRedirect('/cadastrarprofissaopessoa/')
     else:
-        return render(request, 'sosmypc/profissoes_pessoa_forms.html', {'form':ProfissoesPessoaForm(initial={'pessoa': request.user.pessoa})})
+        return render(request, 'sosmypc/profissoes_pessoa_forms.html', {'form':ProfissoesPessoaModelForm(initial={'pessoa': request.user.pessoa})})
 
 
 # usei BaseCreateView porque estava com preguica de fazer um template para renderizar essa view, ou seja, essa sera uma view so de processamento
@@ -290,59 +287,3 @@ class ProfissoesPessoaCreateView(generic.CreateView):
     model = ProfissoesPessoa
     form_class = ProfissoesPessoaModelForm
     success_url = reverse_lazy('profissoespessoa-list')
-
-
-# def funcaoProfissoesPessoa(request):
-#     if request.POST:
-#         #if settings.DEBUG:
-#             #time.sleep(1)  # Only for load demo
-#         form = ProfissoesPessoaForm(request.POST)
-#         if form.is_valid():
-#             # Imaginable form purpose. Post to admins.
-#             # message = """From: %s <%s>\r\nMessage:\r\n%s\r\n""" % (
-#             #     form.cleaned_data['name'],
-#             #     form.cleaned_data['email'],
-#             #     form.cleaned_data['message']
-#             # )
-#             # mail_admins('Contact form', message)
-#
-#             # Only executed with jQuery form request
-#             if request.is_ajax():
-#                 return HttpResponse('OK')
-#             else:
-#                 # render() a form with data (No AJAX)
-#                 # redirect to results ok, or similar may go here
-#                 pass
-#         else:
-#             if request.is_ajax():
-#                 # Prepare JSON for parsing
-#                 errors_dict = {}
-#                 if form.errors:
-#                     for error in form.errors:
-#                         e = form.errors[error]
-#                         errors_dict[error] = str(e)
-#
-#                 return HttpResponseBadRequest(json.dumps(errors_dict))
-#             else:
-#                 # render() form with errors (No AJAX)
-#                 pass
-#     else:
-#         form = ProfissoesPessoaForm()
-#     return render(request, 'sosmypc/profissoes_pessoa_form.html', {'profissao_pessoa_modal_form':form})
-#-----------------------------------------------------------------------------------------------------------------------
-# class CreateQualificacao(PopupMixin, generic.CreateView):
-#     model = Qualificacao
-#     fields = ['descricao']
-#
-#
-# def lista_qualificacao(request):
-#     qualificacao = Qualificacao.objects.all()
-#
-#     form_qualificacao = QualificacaoModelForm(initial={'pessoa': request.user.pessoa})
-#
-#     return render(request,'core/qualificacao_form.html',{'qualificacao':qualificacao, 'form': form_qualificacao})
-
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-

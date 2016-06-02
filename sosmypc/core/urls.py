@@ -1,7 +1,4 @@
-from django.views import generic
 from django.conf.urls import url, include
-from django.contrib.auth.decorators import login_required
-from sosmypc.core import forms
 
 from . import views
 

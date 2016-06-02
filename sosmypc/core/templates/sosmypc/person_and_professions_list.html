@@ -44,14 +44,14 @@
                <!-- Modal Trigger -->
                <a class="modal-trigger waves-effect waves-light btn" href="#modal1">Modal</a>
 
-                <form method="post" action="{% url 'cadastrar-profissao-pessoa' %}">{% csrf_token %}
+                <form method="post" action="{% url 'cadastrarprofissaopessoa' %}">{% csrf_token %}
                    <!-- Modal Structure -->
                    <div id="modal1" class="modal modal-fixed-footer">
 
                          <div class="modal-content">
 
                            <h4>Inserindo profissões da Pessoa.</h4>
-                                {{ person_and_professions_list_form }}
+                                {{ form }}
                          </div>
 
                          <div class="modal-footer">

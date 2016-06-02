@@ -1,16 +1,14 @@
-{% load staticfiles %}
-{% load material_form %}
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Entrar em SOSmyPC {% endblock title %}</title>
+    <title>Material Design for Django Forms and Admin</title>
 
-    <link href="{% static "/static/material/css/materialize.css" %}" rel="stylesheet">
-    <link href="{% static "/static/material/css/jquery.datetimepicker.css" %}" rel="stylesheet">
-    <link href="{% static "/static/material/css/forms.css" %}" rel="stylesheet">
+    {% block head %}
+    {% include 'material/includes/material_css.html' %}
 
     <style type="text/css">
       html, body {
@@ -18,32 +16,18 @@
           height: 100%;
       }
     </style>
-</head>
-
-<body class="valign-wrapper2">
-<div class="container expand-on-small-only">
-    <div class="row valign change-form">
-        <div class="col s12 m8 offset-m2 l8 offset-l2">
-            <div class="card">
-                {% block content %}
-                {% endblock content %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-
-<script src="{% static "/static/material/js/jquery.datetimepicker.js" %}"></script>
-<script src="{% static "/static/material/js/jquery.formset.js" %}"></script>
-<script src="{% static "/static/material/js/materialize.js" %}"></script>
-<script src="{% static "/static/material/js/material_init.js" %}"></script>
-<script type="text/javascript">
-    if (navigator.appVersion.indexOf('Win') != -1) {
-        document.write('<link rel="stylesheet" type="text/css" href="/static/material/css/robotofix.css">');
-    }
-</script>
-
-</body>
+    {% block extrahead %}{% endblock %}
+    {% endblock %}
+  </head>
+  <body class="valign-wrapper2">
+      {% block sidebar %}{% endblock %}
+      <div class="{% block container_class %}container expand-on-small-only{% endblock %}">
+          {% block content %}{% endblock %}
+      </div>
+      {% block js %}
+      <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      {% include 'material/includes/material_js.html' %}
+      {% block extrajs %}{% endblock %}
+      {% endblock %}
+  </body>
 </html>
-

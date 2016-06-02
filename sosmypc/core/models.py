@@ -62,12 +62,11 @@ class ProfissoesPessoa(models.Model):
         return self.profissao.profissao #<<=== Profissao do class profissao equivalente ao nome da profissão
                    #self.profissao. <<=== Variavel deste class, equivalente ao id da profissao nesta tabela
 
-
     def nomepessoa(self):
         return self.pessoa.nomepessoa
 
-    def get_absolute_url(self):
-        return r('profissoes:detalhes_profissoes', pk=self.pk)
+    # def get_absolute_url(self):
+    #     return r('profissoes:detalhes_profissoes', pk=self.pk)
 #------------------------------------------------------------------------------------------------------------------------------------------
 
 

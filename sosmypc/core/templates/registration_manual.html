@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %} Registre-se {% endblock title %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" class="viewform">{% csrf_token %}
+    <div class="card-content">
+
+        <div class="input-field col s12">
+          <i class="mdi-action-account-box prefix"></i>
+            <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+
+        <div class="input-field col s12">
+          <i class="mdi-communication-email prefix"></i>
+            <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+
+        <div class="input-field col s6">
+          <i class="mdi-action-lock-open prefix"></i>
+            <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+        </div>
+
+        <div class="input-field col s6">
+            <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+        </div>
+
+        <h5><strong>Dados Pessoais</strong></h5>
+        <HR ALIGN=RIGHT NOSHADE>
+        <br>
+
+        <div class="input-field col s12">
+            <label for="{{ form.nome.id_for_label }}">{{ form.nome.label }}</label>
+            {{ form.nome }}
+            {{ form.nome.errors }}
+        </div>
+
+        <div class="input-field col s3">
+            <label for="{{ form.cep.id_for_label }}">{{ form.cep.label }}</label>
+            {{ form.cep }}
+            {{ form.cep.errors }}
+        </div>
+
+        <div class="input-field col s6">
+            <label for="{{ form.logradouro.id_for_label }}">{{ form.logradouro.label }}</label>
+            {{ form.logradouro }}
+            {{ form.logradouro.errors }}
+        </div>
+
+        <div class="input-field col s3">
+            <label for="{{ form.numero.id_for_label }}">{{ form.numero.label }}</label>
+            {{ form.numero }}
+            {{ form.numero.errors }}
+        </div>
+
+        <div class="input-field col s5">
+            <label for="{{ form.bairro.id_for_label }}">{{ form.bairro.label }}</label>
+            {{ form.bairro }}
+            {{ form.bairro.errors }}
+        </div>
+
+        <div class="input-field col s5">
+            <label for="{{ form.cidade.id_for_label }}">{{ form.cidade.label }}</label>
+            {{ form.cidade }}
+            {{ form.cidade.errors }}
+        </div>
+
+        <div class="input-field col s2">
+            <label for="{{ form.estado.id_for_label }}">{{ form.estado.label }}</label>
+            {{ form.estado }}
+            {{ form.estado.errors }}
+        </div>
+
+        <p>
+          <input type="checkbox" id="{{ form.profissional.id_for_label }}" name="{{ form.profissional.name }}" />
+          <label for={{ form.profissional.id_for_label }}>{{ form.profissional.label }}</label>
+            {{ form.profissional }}
+            {{ form.profissional.errors }}
+        </p>
+
+        <p>
+          <input type="checkbox" checked="checked" id={{ form.agree_toc.id_for_label }} />
+          <label for={{ form.agree_toc.id_for_label }}>{{ form.agree_toc.label }}</label>
+            {{ form.agree_toc }}
+            {{ form.agree_toc.errors }}
+        </p>
+
+
+    </div>
+    <div class="card-action">
+        <div class="right-align">
+            <button class="waves-effect waves-light btn" type="submit">Cadastrar</button>
+        </div>
+    </div>
+</form>
+{% endblock content %}
+

@@ -1,22 +1,17 @@
-import datetime as datetime
+from crispy_forms.layout import Layout, Row
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from material import Layout, Row, Fieldset, Span3, Span2, Span10, Span8, Span7, Span5
+from django.template import Template
+from material import Fieldset, Span2, Span8, Span5
 
+from .models import ProfissoesPessoa, Pessoa, Profissao
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
-
-from .models import ProfissoesPessoa, Qualificacao
-
-
-from django_addanother.widgets import AddAnotherWidgetWrapper
-from django.core.urlresolvers import reverse_lazy
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=30,label="Nome")
     email = forms.EmailField(label="E-mail")
     password = forms.CharField(widget=forms.PasswordInput,label="Senha")
+
 
 class RegistrationForm(forms.Form, UserCreationForm):
     username = forms.CharField(max_length=30,required=True,label='Login')
@@ -39,14 +34,25 @@ class RegistrationForm(forms.Form, UserCreationForm):
     agree_toc = forms.BooleanField(required=True, label='Eu aceito os termos e condições de uso.')
 
     layout = Layout(
-                 Fieldset('Cadastrar em SOS my PC',
-                    'username','email',
-                    Row('password1', 'password2')),
-                 Fieldset('Dados Pessoais','nome',
-                    Row(Span2('cep'),# Span2('tipo_logradouro'),
-                    Span8('logradouro'),Span2('numero')),
-                    Row(Span5('bairro'),Span5('cidade'),Span2('estado'))  ),
-                             'profissional', 'agree_toc')
+             Fieldset('Cadastrar em SOS my PC',
+                'username','email',
+                Row('password1', 'password2')),
+             Fieldset('Dados Pessoais','nome',
+                Row(Span2('cep'),# Span2('tipo_logradouro'),
+                Span8('logradouro'),Span2('numero')),
+                Row(Span5('bairro'),Span5('cidade'),Span2('estado'))),
+                        'profissional', 'agree_toc')
+
+    # template = Template("""
+    # {% form form=form %}
+    #     {% part form.username prefix %}<i class="mdi-action-account-box prefix"></i>{% endpart %}
+    #     {% part form.email prefix %}<label for="id_email"></label><i class="mdi-communication-email prefix"></i>{% endpart %}
+    #     {% part form.password1 prefix %}<i class="mdi-action-lock-open prefix"></i>{% endpart %}
+    #     {% part form.password2 prefix %}<i class="mdi-action-lock-open prefix"></i>{% endpart %}
+    # {% endform %}
+    # """)
+
+    title = "Registration"
 
 
 class CommentForm(forms.Form):
@@ -77,8 +83,8 @@ class ProfissaoForm(forms.Form):#Atualmente sem uso.
 
 
 class ProfissoesPessoaForm(forms.Form): #Atualmente sem uso.
-    pessoa = forms.CharField(max_length=30,label="Pessoa")
-    profissao = forms.CharField(max_length=30,label="Profissao")
+    pessoa = forms.ModelChoiceField(label="Pessoa",queryset=Pessoa.objects.all(),)
+    profissao = forms.ModelChoiceField(label="Profissao",queryset=Profissao.objects.all(),)
     rating = forms.IntegerField(label="Rating")
 
     layout = Layout(
@@ -93,6 +99,7 @@ class ProfissoesPessoaForm(forms.Form): #Atualmente sem uso.
     #     helper.label_class = 'col-md-2'
     #     helper.field_class = 'col-md-10'
     #     return helper
+
 
 class ProfissoesPessoaModelForm(forms.ModelForm):
     class Meta:

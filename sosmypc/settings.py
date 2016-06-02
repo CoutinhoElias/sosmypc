@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',#<<<====Tentando CRUDcom modal.
     'rest_framework',
-    #'django_addanother',
     'sosmypc.core',
     'sosmypc.core.api',
     'sosmypc.financeiro',
